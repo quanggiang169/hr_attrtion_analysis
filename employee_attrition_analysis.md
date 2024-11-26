@@ -129,15 +129,8 @@ library(gridExtra)
 
 ``` r
 library(ggcorrplot)
-```
-
-    ## Warning: package 'ggcorrplot' was built under R version 4.4.2
-
-``` r
 library(reshape2)
 ```
-
-    ## Warning: package 'reshape2' was built under R version 4.4.2
 
     ## 
     ## Attaching package: 'reshape2'
@@ -609,7 +602,7 @@ df_hratt[sample(nrow(df_hratt), 1), ]
     ## # A tibble: 1 × 31
     ##     age attrition business_travel daily_rate department       distance_from_home
     ##   <dbl> <chr>     <chr>                <dbl> <chr>                         <dbl>
-    ## 1    42 No        Travel_Rarely          810 Research & Deve…                 23
+    ## 1    54 No        Travel_Rarely          431 Research & Deve…                  7
     ## # ℹ 25 more variables: education <dbl>, education_field <chr>,
     ## #   environment_satisfaction <dbl>, gender <chr>, hourly_rate <dbl>,
     ## #   job_involvement <dbl>, job_level <dbl>, job_role <chr>,
