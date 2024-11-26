@@ -609,7 +609,7 @@ df_hratt[sample(nrow(df_hratt), 1), ]
     ## # A tibble: 1 × 31
     ##     age attrition business_travel daily_rate department       distance_from_home
     ##   <dbl> <chr>     <chr>                <dbl> <chr>                         <dbl>
-    ## 1    32 No        Travel_Rarely          267 Research & Deve…                 29
+    ## 1    42 No        Travel_Rarely          810 Research & Deve…                 23
     ## # ℹ 25 more variables: education <dbl>, education_field <chr>,
     ## #   environment_satisfaction <dbl>, gender <chr>, hourly_rate <dbl>,
     ## #   job_involvement <dbl>, job_level <dbl>, job_role <chr>,
