@@ -18,5 +18,9 @@ This project uses a fictional dataset from the [IBM HR Analytics Employee Attrit
 - **GitHub**: For project collaboration and version control.
 
 ## Project Structure
-
+- [`dataset`](https://github.com/quanggiang169/hr_attrtion_analysis/tree/main/dataset): Contains raw and processed datasets used in the analysis.
+- [`employee_attrition_analysis.md`](https://github.com/quanggiang169/hr_attrtion_analysis/blob/main/employee_attrition_analysis.md): R scripts for data manipulation and analysis.
+- [`hr_attrition_dashboard.twbx`](https://github.com/quanggiang169/hr_attrtion_analysis/blob/main/hr_attrition_dashboard.twbx): Tableau dashboards and exported screenshots.
+- [`readme.md`](https://github.com/quanggiang169/hr_attrtion_analysis/blob/main/readme.md): This file contains the project introduction and instructions.
+  
 ## Key Findings
