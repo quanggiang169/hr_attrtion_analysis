@@ -19,7 +19,7 @@ This project uses a fictional dataset from the [IBM HR Analytics Employee Attrit
 
 ## Project Process
 
-![Project process] (Project_process.png)
+![Project process] (https://github.com/quanggiang169/hr_attrtion_analysis/tree/main/Project_process.png)
 
 ## Project Structure
 - [`dataset`](https://github.com/quanggiang169/hr_attrtion_analysis/tree/main/dataset): Contains raw and processed datasets used in the analysis.
