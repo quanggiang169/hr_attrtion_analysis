@@ -602,7 +602,7 @@ df_hratt[sample(nrow(df_hratt), 1), ]
     ## # A tibble: 1 × 31
     ##     age attrition business_travel daily_rate department       distance_from_home
     ##   <dbl> <chr>     <chr>                <dbl> <chr>                         <dbl>
-    ## 1    54 No        Travel_Rarely          431 Research & Deve…                  7
+    ## 1    18 Yes       Non-Travel             247 Research & Deve…                  8
     ## # ℹ 25 more variables: education <dbl>, education_field <chr>,
     ## #   environment_satisfaction <dbl>, gender <chr>, hourly_rate <dbl>,
     ## #   job_involvement <dbl>, job_level <dbl>, job_role <chr>,
@@ -2603,64 +2603,78 @@ models and strategic retention plans.
 
 ## 8. Conclusion
 
-This project has followed a systematic and structured approach to
-understanding employee attrition, from data preparation and exploratory
-analysis to hypothesis testing and correlation studies. The workflow
-provided a clear path through the dataset, ensuring we carefully
-analyzed each aspect of the data and addressed any issues such as
-missing values, data types, and column naming. Key steps in the
-workflow, such as the creation of descriptive statistics, univariate and
-bivariate analysis, and hypothesis validation, were crucial in
-uncovering patterns and testing assumptions about employee behavior and
-turnover.
+The analysis provides valuable insights into the factors influencing
+employee attrition and addresses the key questions guiding this project:
 
-Results Obtained:
+**Are certain groups of employees more likely to leave than others?**
 
-- The analysis revealed several key insights into the factors
-  influencing employee attrition, such as the strong impact of job
-  satisfaction, work-life balance, and tenure on employee retention. It
-  was observed that employees who are older, have more years of
-  experience, and have been with the company longer tend to stay, while
-  factors like low job involvement and dissatisfaction with the work
-  environment contribute to higher turnover rates.
-- A surprising outcome was the weak correlation between employee
-  performance ratings and attrition, indicating that performance alone
-  may not be a strong predictor of turnover. Additionally, we found that
-  while some factors like salary and training hours did not have clear
-  relationships with attrition, other variables like job level, job
-  satisfaction, and overtime work had a more direct impact.
+Based on the analysis, specific groups exhibit a higher likelihood of
+attrition:
 
-Lessons Learned:
+- Employees in the HR field show the highest turnover rates among all
+  education fields.
+- Employees aged under 40 are more prone to leave their jobs.
+- Single employees are more likely to experience attrition compared to
+  their married counterparts.
+- Employees with lower job levels tend to leave at higher rates.
+- Employees who report lower satisfaction with their jobs, environment,
+  or work-life balance are more likely to leave.
 
-- One key lesson from this project was the importance of
-  hypothesis-driven analysis. Testing hypotheses allowed us to focus on
-  specific aspects of attrition and validate common assumptions. This
-  approach not only helped in structuring the analysis but also
-  highlighted areas where further investigation is needed (such as the
-  impact of distance from work or salary on turnover).
-- Another important takeaway was the complexity of employee attrition,
-  where multiple factors interact and influence each other. Simple
-  correlations often do not capture the full picture, and multivariate
-  analysis is needed to uncover deeper relationships between variables.
+**What characteristics are commonly found among employees who decide to
+leave?**
 
-**Reflection on Insights and Implications for HR Strategies:** The
-insights gained from this analysis provide valuable implications for HR
-strategies. For example, organizations can focus on improving work-life
-balance and employee satisfaction to reduce turnover. Additionally,
-targeting departments with higher attrition rates, such as Sales, with
-tailored retention strategies could prove effective. Although salary and
-training hours showed weak links to attrition, factors like career
-progression, performance recognition, and job involvement are critical
-in enhancing retention. Therefore, HR should prioritize creating an
-engaging and supportive work environment, fostering growth
-opportunities, and improving manager relationships to lower turnover.
+The analysis identified several common characteristics among employees
+who tend to leave:
 
-In conclusion, this project has not only provided a detailed
-understanding of the factors driving employee attrition but also
-highlighted the need for HR departments to adopt data-driven strategies
-to address turnover. By leveraging these insights, HR teams can refine
-their policies and interventions, potentially improving employee
-retention and creating a more positive workplace culture.
+- Lack of job involvement significantly correlates with higher attrition
+  rates.
+- Dissatisfaction with the work environment and job satisfaction are
+  prominent factors driving attrition.
+- Limited opportunities for promotion contribute to higher turnover.
+- Employees remaining in the same role for extended periods are more
+  likely to leave.
+- Frequent overtime is a significant predictor of attrition.
+- Lower quality relationships with their managers are associated with
+  higher turnover rates.
+
+**Which factors can be managed or improved to help reduce attrition
+rates?**
+
+To mitigate attrition, organizations can focus on:
+
+- Enhancing job satisfaction by fostering a supportive and engaging work
+  culture.
+- Promoting career growth opportunities to prevent stagnation in roles
+  and provide clear advancement paths.
+- Addressing work-life balance concerns by reducing excessive overtime
+  and offering flexible work arrangements.
+- Strengthening manager-employee relationships through targeted training
+  programs and fostering open communication channels.
+
+**Additional Insights**
+
+- Strong correlations were observed between age and variables such as
+  monthly income, total working years, and years in the company,
+  indicating that older employees with more experience are generally
+  less likely to leave.
+- Job roles are closely linked to departments but have minimal impact on
+  business travel, highlighting opportunities for role-specific
+  interventions rather than department-wide strategies.
+- Training hours and the number of companies worked at show weak
+  correlations with key attrition factors, suggesting these are not
+  primary drivers of turnover.
+
+**Reliability and Future Work**
+
+While the findings reveal meaningful trends, the reliability of some
+statistical tests, such as the Chi-square test for education fields,
+requires further investigation. Future research should focus on
+gathering more robust data and conducting additional tests to validate
+these conclusions.
+
+By understanding and addressing these factors, organizations can develop
+effective strategies to retain valuable employees and reduce attrition
+rates.
 
 ## 9. Limitations
 
