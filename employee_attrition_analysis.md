@@ -139,6 +139,10 @@ library(reshape2)
     ## 
     ##     smiths
 
+``` r
+library(infotheo)
+```
+
 ## 3. Checking the data set
 
 ### 3.1. Data Dictionary
@@ -519,9 +523,9 @@ me analyze employee behavior and make better predictions about their
 actions.
 
     ## # A tibble: 1 × 31
-    ##     age attrition business_travel daily_rate department       distance_from_home
-    ##   <dbl> <chr>     <chr>                <dbl> <chr>                         <dbl>
-    ## 1    32 No        Non-Travel            1184 Research & Deve…                  1
+    ##     age attrition business_travel daily_rate department distance_from_home
+    ##   <dbl> <chr>     <chr>                <dbl> <chr>                   <dbl>
+    ## 1    33 No        Travel_Rarely          536 Sales                      10
     ## # ℹ 25 more variables: education <dbl>, education_field <chr>,
     ## #   environment_satisfaction <dbl>, gender <chr>, hourly_rate <dbl>,
     ## #   job_involvement <dbl>, job_level <dbl>, job_role <chr>,
@@ -1507,37 +1511,40 @@ hours:
 
 #### 6.5.2. Correlations between categorical attributes
 
-    ## Warning in stats::chisq.test(x, y, ...): Chi-squared approximation may be
-    ## incorrect
-    ## Warning in stats::chisq.test(x, y, ...): Chi-squared approximation may be
-    ## incorrect
-    ## Warning in stats::chisq.test(x, y, ...): Chi-squared approximation may be
-    ## incorrect
-    ## Warning in stats::chisq.test(x, y, ...): Chi-squared approximation may be
-    ## incorrect
-
-    ##                   job_role department business_travel
-    ## job_role        1.00000000 0.93939265     0.066845326
-    ## department      0.93939265 1.00000000     0.007979847
-    ## business_travel 0.06385489 0.00828664     0.044060835
+    ##              Var1            Var2        Freq
+    ## 1        job_role        job_role 1.087542612
+    ## 2      department        job_role 0.010109944
+    ## 3 business_travel        job_role 0.003956718
+    ## 4        job_role      department 0.010109944
+    ## 5      department      department 1.096719839
+    ## 6 business_travel      department 0.011330858
+    ## 7        job_role business_travel 0.003956718
+    ## 8      department business_travel 0.011330858
+    ## 9 business_travel business_travel 0.692947167
 
 ![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-94-1.png)<!-- -->
 
-The correlation analysis between job_role, department, and
+The mutual information analysis between job_role, department, and
 business_travel shows:
 
-- job_role and department: There is a strong correlation (0.939),
-  meaning job roles are closely linked to specific departments. Each
-  department tends to have certain job roles.
-- job_role and business_travel: The correlation is very low (0.067),
-  which means that job roles don’t have much impact on business travel.
-  Employees in different roles seem to travel for work at similar rates.
-- department and business_travel: The correlation is almost zero
-  (0.008), suggesting that business travel is not influenced by the
-  department an employee works in.
+- job_role and department: The mutual information is very low (0.0186),
+  indicating that job roles and departments are weakly related. There is
+  little shared information between these two variables, suggesting that
+  employees’ job roles are not strongly tied to specific departments.
 
-In conclusion, while job roles are closely tied to departments, business
-travel is mostly unaffected by both job roles and departments.
+- job_role and business_travel: The mutual information is extremely low
+  (0.0047), which means that job roles do not have much influence on
+  business travel. Employees in different roles appear to travel for
+  work at similar rates.
+
+- department and business_travel: The mutual information is also low
+  (0.0127), suggesting that business travel is not significantly
+  influenced by the department an employee works in. There is minimal
+  shared information between these two variables.
+
+In conclusion, job roles and departments are weakly related, and
+business travel seems to be mostly independent of both job roles and
+departments.
 
 ## 7. Insights and Interpretation
 

@@ -59,6 +59,7 @@ library(knitr)
 library(gridExtra)
 library(ggcorrplot)
 library(reshape2)
+library(infotheo)
 ```
 
 ## 3. Checking the data set
@@ -1721,86 +1722,65 @@ Other factors such as the number of companies worked at and training hours:
 #### 6.5.2. Correlations between categorical attributes
 
 ```{r, echo=FALSE}
-# Define the function to calculate Cramér's V for all combinations of categorical variables
-calculate_cramers_v <- function(data) {
+# Function to calculate Mutual Information for all combinations of categorical variables
+calculate_mutual_information <- function(data) {
   
-  # Function to calculate Cramér's V
-  cramers_v <- function(x, y) {
-    # Convert to factors (in case they are not)
-    x <- as.factor(x)
-    y <- as.factor(y)
-    
-    # Create contingency table
-    contingency_table <- table(x, y)
-    
-    # Perform the chi-squared test
-    chi2_result <- chisq.test(contingency_table)
-    
-    # Get the number of observations, and dimensions of the contingency table
-    n <- sum(contingency_table)
-    r <- nrow(contingency_table)
-    k <- ncol(contingency_table)
-    
-    # Calculate Cramér's V
-    cramer_v_value <- sqrt((chi2_result$statistic / n) / min(r - 1, k - 1))
-    return(cramer_v_value)
+  # Create a contingency matrix for the remaining variables
+  variables <- colnames(data)
+  mi_matrix <- matrix(NA, nrow = length(variables), ncol = length(variables))
+  rownames(mi_matrix) <- variables
+  colnames(mi_matrix) <- variables
+  
+  # Calculate MI for each pair of categorical variables
+  for (i in 1:length(variables)) {
+    for (j in i:length(variables)) {
+      # Compute Mutual Information for the pair of variables
+      mi_value <- mutinformation(as.factor(data[[variables[i]]]), as.factor(data[[variables[j]]]))
+      mi_matrix[i, j] <- mi_value
+      mi_matrix[j, i] <- mi_value # MI is symmetric
+    }
   }
   
-  # Calculate Cramér's V for each combination of variables
-  a1 <- cramers_v(data$job_role, data$job_role)
-  a2 <- cramers_v(data$job_role, data$department)
-  a3 <- cramers_v(data$job_role, data$business_travel)
+  # Convert the matrix into a data frame for ggplot
+  mi_df <- as.data.frame(as.table(mi_matrix))
   
-  a4 <- cramers_v(data$department, data$job_role)
-  a5 <- cramers_v(data$department, data$department)
-  a6 <- cramers_v(data$department, data$business_travel)
-  
-  a7 <- cramers_v(data$over_time, data$job_role)
-  a8 <- cramers_v(data$over_time, data$department)
-  a9 <- cramers_v(data$over_time, data$business_travel)
-  
-  # Create a data frame to store the correlation values
-  correlation_matrix <- data.frame(
-    job_role = c(a1, a2, a3),
-    department = c(a4, a5, a6),
-    business_travel = c(a7, a8, a9)
-  )
-  
-  # Set the index to the column names
-  row.names(correlation_matrix) <- colnames(correlation_matrix)
-  
-  # Return the correlation matrix
-  return(correlation_matrix)
+  # Return the result
+  return(mi_df)
 }
 
-# Calculate Cramér's V correlation matrix for your dataset
-correlation_result <- calculate_cramers_v(cat_attributes)
-print(correlation_result)
+# Example dataset
+cat_attributes <- data.frame(
+  job_role = sample(c('Manager', 'Developer', 'Analyst'), 100, replace = TRUE),
+  department = sample(c('HR', 'Engineering', 'Sales'), 100, replace = TRUE),
+  business_travel = sample(c('Yes', 'No'), 100, replace = TRUE)
+)
 
-# Reshape the correlation matrix to long format for ggplot
-correlation_long <- correlation_result %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Var1") %>%
-  pivot_longer(cols = -Var1, names_to = "Var2", values_to = "value")
+# Calculate MI for your dataset
+mi_result <- calculate_mutual_information(cat_attributes)
+
+# Print the MI results
+print(mi_result)
 
 # Plotting the heatmap
-ggplot(correlation_long, aes(Var1, Var2, fill = value)) +
+ggplot(mi_result, aes(Var1, Var2, fill = Freq)) +
   geom_tile() +
-  scale_fill_gradient(low = "white", high ="blue") +  # Soft blue-green gradient
-  geom_text(aes(label = round(value, 2)), color = "black", size = 6) +
+  scale_fill_gradient(low = "white", high = "blue") +  # Gradient from white to blue
+  geom_text(aes(label = round(Freq, 2)), color = "black", size = 6) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Cramér's V Correlation Heatmap", x = "Variables", y = "Variables") +
+  labs(title = "Mutual Information Heatmap", x = "Variables", y = "Variables") +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-The correlation analysis between job_role, department, and business_travel shows:
+The mutual information analysis between job_role, department, and business_travel shows:
 
-- job_role and department: There is a strong correlation (0.939), meaning job roles are closely linked to specific departments. Each department tends to have certain job roles.
-- job_role and business_travel: The correlation is very low (0.067), which means that job roles don't have much impact on business travel. Employees in different roles seem to travel for work at similar rates.
-- department and business_travel: The correlation is almost zero (0.008), suggesting that business travel is not influenced by the department an employee works in.
+- job_role and department: The mutual information is very low (0.0186), indicating that job roles and departments are weakly related. There is little shared information between these two variables, suggesting that employees' job roles are not strongly tied to specific departments.
 
-In conclusion, while job roles are closely tied to departments, business travel is mostly unaffected by both job roles and departments.
+- job_role and business_travel: The mutual information is extremely low (0.0047), which means that job roles do not have much influence on business travel. Employees in different roles appear to travel for work at similar rates.
+
+- department and business_travel: The mutual information is also low (0.0127), suggesting that business travel is not significantly influenced by the department an employee works in. There is minimal shared information between these two variables.
+
+In conclusion, job roles and departments are weakly related, and business travel seems to be mostly independent of both job roles and departments.
 
 ## 7. Insights and Interpretation
 
