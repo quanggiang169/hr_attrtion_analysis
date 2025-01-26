@@ -202,25 +202,11 @@ df_hratt_cln <- clean_names(df_hratt)
 
 ### 3.4. Checking data dimensions
 
-``` r
-# Print the number of rows and columns in the data frame
-cat('Number of rows:', nrow(df_hratt_cln), '\n')
-```
-
     ## Number of rows: 1470
-
-``` r
-cat('Number of cols:', ncol(df_hratt_cln), '\n')
-```
 
     ## Number of cols: 35
 
 ### 3.5. Checking data types
-
-``` r
-# Display the structure of the dataframe
-str(df_hratt_cln)
-```
 
     ## spc_tbl_ [1,470 × 35] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
     ##  $ age                       : num [1:1470] 41 49 37 33 27 32 59 30 38 36 ...
@@ -298,23 +284,11 @@ str(df_hratt_cln)
     ##   .. )
     ##  - attr(*, "problems")=<externalptr>
 
-``` r
-# Count the number of columns for each data type in the cleaned dataframe
-dtype_counts <- table(sapply(df_hratt_cln, class))
-print(dtype_counts)
-```
-
     ## 
     ## character   numeric 
     ##         9        26
 
 ### 3.6. Checking missing data
-
-``` r
-# Count the number of missing values in each column of the data frame
-missing_values <- colSums(is.na(df_hratt_cln))
-print(missing_values)
-```
 
     ##                        age                  attrition 
     ##                          0                          0 
@@ -359,43 +333,7 @@ Note: Because the data set is fictional, it is free of any NaN values.
 
 #### 3.7.1. Separate Numerical and Categorical Variables
 
-``` r
-# Separate numerical and categorical attributes
-num_attributes <- df_hratt_cln %>% select(where(is.numeric))
-cat_attributes <- df_hratt_cln %>% select(where(negate(is.numeric)))
-```
-
 #### 3.7.2. Create a Summary Data Frame
-
-``` r
-# Calculate central tendency: mean, median
-mean_values <- colMeans(num_attributes, na.rm = TRUE)
-median_values <- apply(num_attributes, 2, median, na.rm = TRUE)
-
-# Calculate distribution: std, min, max, range, skew, kurtosis
-std_values <- apply(num_attributes, 2, sd, na.rm = TRUE)
-min_values <- apply(num_attributes, 2, min, na.rm = TRUE)
-max_values <- apply(num_attributes, 2, max, na.rm = TRUE)
-range_values <- max_values - min_values
-skewness_values <- apply(num_attributes, 2, function(x) skewness(x, na.rm = TRUE))
-kurtosis_values <- apply(num_attributes, 2, function(x) kurtosis(x, na.rm = TRUE))
-
-# Create summary statistics table
-summary_stats <- data.frame(
-  attributes = names(num_attributes),
-  min = min_values,
-  max = max_values,
-  range = range_values,
-  mean = mean_values,
-  median = median_values,
-  std = std_values,
-  skewness = skewness_values,
-  kurtosis = kurtosis_values
-)
-
-# Display the summary statistics table
-kable(summary_stats, format = "simple", row.names = FALSE)
-```
 
 | attributes | min | max | range | mean | median | std | skewness | kurtosis |
 |:---|---:|---:|---:|---:|---:|---:|---:|---:|
@@ -428,24 +366,12 @@ kable(summary_stats, format = "simple", row.names = FALSE)
 
 #### 3.7.3. Check Unique Value Counts for Categorical Attributes
 
-``` r
-# Check how many unique values we have for each categorical attribute
-unique_counts <- sapply(cat_attributes, function(x) length(unique(x)))
-unique_counts
-```
-
     ##       attrition business_travel      department education_field          gender 
     ##               2               3               3               6               2 
     ##        job_role  marital_status          over18       over_time 
     ##               9               3               1               2
 
 #### 3.7.4. Analyze Target Variable (attrition)
-
-``` r
-# Count how many of each class we have in the target variable
-attrition_counts <- table(df_hratt_cln$attrition)
-attrition_counts
-```
 
     ## 
     ##   No  Yes 
@@ -461,8 +387,6 @@ write.csv(df_hratt_cln, file = 'dataset/Human_Resources_clean.csv', row.names = 
 ## 4. Outlining the Hypotheses
 
 ### 4.1. Hypothesis generation
-
-<img src="hyphothesis_mindmap.svg" width="100%" />
 
 | Factor | Hypothesis |
 |----|----|
@@ -542,11 +466,6 @@ write.csv(df_hratt_cln, file = 'dataset/Human_Resources_clean.csv', row.names = 
 
 ### 5.1. Loading data set
 
-``` r
-# Loads data set
-df_hratt <- read_csv("dataset/Human_Resources_clean.csv")
-```
-
     ## Rows: 1470 Columns: 35
     ## ── Column specification ────────────────────────────────────────────────────────
     ## Delimiter: ","
@@ -588,21 +507,10 @@ By removing these columns, I can focus on the information that will help
 me analyze employee behavior and make better predictions about their
 actions.
 
-``` r
-# Define columns to drop
-cols_drop <- c('over18', 'standard_hours', 'employee_count', 'employee_number')
-
-# Drop the columns from df_hratt
-df_hratt <- df_hratt[, !(names(df_hratt) %in% cols_drop)]
-
-# View a random sample from the cleaned data
-df_hratt[sample(nrow(df_hratt), 1), ]
-```
-
     ## # A tibble: 1 × 31
-    ##     age attrition business_travel daily_rate department       distance_from_home
-    ##   <dbl> <chr>     <chr>                <dbl> <chr>                         <dbl>
-    ## 1    18 Yes       Non-Travel             247 Research & Deve…                  8
+    ##     age attrition business_travel   daily_rate department     distance_from_home
+    ##   <dbl> <chr>     <chr>                  <dbl> <chr>                       <dbl>
+    ## 1    27 No        Travel_Frequently       1297 Research & De…                  5
     ## # ℹ 25 more variables: education <dbl>, education_field <chr>,
     ## #   environment_satisfaction <dbl>, gender <chr>, hourly_rate <dbl>,
     ## #   job_involvement <dbl>, job_level <dbl>, job_role <chr>,
@@ -623,97 +531,13 @@ labels. By replacing the numerical codes with clear names, my data will
 become easier to read and understand, ultimately improving the quality
 of my analysis.
 
-``` r
-# Convert education levels
-df_hratt <- df_hratt %>%
-  mutate(education = recode(education, 
-                            `1` = "Below College", 
-                            `2` = "College", 
-                            `3` = "Bachelor", 
-                            `4` = "Master", 
-                            `5` = "Doctor"))
-
-# Convert environment satisfaction levels
-df_hratt <- df_hratt %>%
-  mutate(environment_satisfaction = recode(environment_satisfaction, 
-                                           `1` = "Low", 
-                                           `2` = "Medium", 
-                                           `3` = "High", 
-                                           `4` = "Very High"))
-
-# Convert job involvement levels
-df_hratt <- df_hratt %>%
-  mutate(job_involvement = recode(job_involvement, 
-                                  `1` = "Low", 
-                                  `2` = "Medium", 
-                                  `3` = "High", 
-                                  `4` = "Very High"))
-
-# Convert job levels
-df_hratt <- df_hratt %>%
-  mutate(job_level = recode(job_level, 
-                            `1` = "Junior", 
-                            `2` = "Mid", 
-                            `3` = "Senior", 
-                            `4` = "Manager", 
-                            `5` = "Director"))
-
-# Convert job satisfaction levels
-df_hratt <- df_hratt %>%
-  mutate(job_satisfaction = recode(job_satisfaction, 
-                                   `1` = "Low", 
-                                   `2` = "Medium", 
-                                   `3` = "High", 
-                                   `4` = "Very High"))
-
-# Convert performance rating levels
-df_hratt <- df_hratt %>%
-  mutate(performance_rating = recode(performance_rating, 
-                                     `1` = "Low", 
-                                     `2` = "Good", 
-                                     `3` = "Excellent", 
-                                     `4` = "Outstanding"))
-
-# Convert relationship satisfaction levels
-df_hratt <- df_hratt %>%
-  mutate(relationship_satisfaction = recode(relationship_satisfaction, 
-                                            `1` = "Low", 
-                                            `2` = "Medium", 
-                                            `3` = "High", 
-                                            `4` = "Very High"))
-
-# Convert work life balance levels
-df_hratt <- df_hratt %>%
-  mutate(work_life_balance = recode(work_life_balance, 
-                                    `1` = "Bad", 
-                                    `2` = "Good", 
-                                    `3` = "Better", 
-                                    `4` = "Best"))
-```
-
 ### 5.4. Checkpoint
-
-``` r
-# Save the current data set state
-write.csv(df_hratt, file = "dataset/Human_Resources_fe.csv", row.names = FALSE)
-```
 
 ## 6. Exploratory data analysis
 
 ### 6.1. Loading data set
 
-``` r
-df_hratt <- read.csv("dataset/Human_Resources_fe.csv")
-```
-
 ### 6.2. Separating data types
-
-``` r
-#selects only numerical attributes
-num_attributes <- df_hratt %>% select(where(is.numeric))
-#selects only categorical attributes
-cat_attributes <- df_hratt %>% select(where(negate(is.numeric)))
-```
 
 ### 6.3. Univariate Analysis
 
@@ -731,31 +555,7 @@ versus those who stayed. This visualization will help me understand the
 distribution of attrition within the dataset. After plotting, I observe
 that a significantly larger number of employees remained in the company
 compared to those who left.
-
-``` r
-# Create a count plot for attrition
-ggplot(df_hratt, aes(x = attrition, fill = attrition)) +
-  geom_bar() +
-  scale_fill_manual(values = c("Yes" = "#FF9999", "No" = "#99CCFF")) + # Custom colors for bars
-  labs(title = "Number of Attrition", 
-       x = "Attrition", 
-       y = "Count") +
-  theme_minimal(base_size = 15) +  # Minimal theme with larger base font size
-  theme(
-    plot.title = element_text(size = 20, face = "bold", hjust = 0.5),  # Center the title
-    axis.title.x = element_text(size = 16), 
-    axis.title.y = element_text(size = 16), 
-    axis.text = element_text(size = 14),  # Larger axis text
-    legend.position = "none",  # Hide legend
-    panel.grid.major = element_line(color = "lightgray"),  # Light grid lines for readability
-    panel.grid.minor = element_blank(),  # No minor grid lines
-    plot.background = element_rect(fill = "white", color = NA),  # White background
-    plot.margin = margin(1, 1, 1, 1, "cm")  # Margin around the plot
-  ) +
-  coord_cartesian(clip = 'off')  # Ensure elements are not clipped
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 To quantify this, I will count how many employees left the company and
 how many stayed. I will display these numbers along with their
@@ -763,38 +563,11 @@ percentages. This analysis reveals that most employees (83.88%) stayed,
 while only a small number (16.12%) left. Understanding these figures
 helps me gain a clearer perspective on the situation.
 
-``` r
-# Separate the data set for easier analysis
-df_left <- df_hratt %>% filter(attrition == "Yes")
-df_stayed <- df_hratt %>% filter(attrition == "No")
-
-# Count the number of employees who stayed and left
-# Calculate totals
-total_employees_left <- nrow(df_left)
-total_employees_stayed <- nrow(df_stayed)
-total_employees <- nrow(df_hratt)
-
-# Print results
-cat('Number of employees who left:', total_employees_left, '\n')
-```
-
     ## Number of employees who left: 237
-
-``` r
-cat('This is equivalent to', round((total_employees_left / total_employees) * 100, 2), '% of the total employees.\n\n')
-```
 
     ## This is equivalent to 16.12 % of the total employees.
 
-``` r
-cat('Number of employees who stayed:', total_employees_stayed, '\n')
-```
-
     ## Number of employees who stayed: 1233
-
-``` r
-cat('This is equivalent to', round((total_employees_stayed / total_employees) * 100, 2), '% of the total employees.\n')
-```
 
     ## This is equivalent to 83.88 % of the total employees.
 
@@ -804,34 +577,7 @@ Next, I will visualize the distribution of all numerical attributes in
 the dataset using histograms. This step allows me to examine the
 frequency distribution of numerical variables, helping to identify
 patterns such as skewness, central tendencies, and potential outliers.
-
-``` r
-# Set up to show two plots per row
-par(mfrow = c(2, 2), mar = c(5, 5, 4, 2) + 0.1, oma = c(2, 2, 2, 2))
-
-# Loop through each numerical attribute to create a clear histogram
-for (col in names(num_attributes)) {
-  hist(num_attributes[[col]], 
-       main = paste("Histogram of", col), 
-       xlab = col, 
-       col = "lightblue", 
-       breaks = 30,
-       cex.main = 1.5,    # Title size for readability
-       cex.lab = 1.3,     # Label size
-       cex.axis = 1.2,    # Axis size
-       border = "darkblue", 
-       las = 1)           # Make axis labels horizontal for clarity
-}
-```
-
-![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-num-1.png)<!-- -->![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-num-2.png)<!-- -->![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-num-3.png)<!-- -->
-
-``` r
-# Reset layout after plotting
-par(mfrow = c(1, 1))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-num-4.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-num-1.png)<!-- -->![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-num-2.png)<!-- -->![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-num-3.png)<!-- -->![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-num-4.png)<!-- -->
 
 As we can see, except for the age variable, no other variable follows a
 normal distribution, and even age is not perfectly normal. Therefore,
@@ -845,124 +591,15 @@ for each attribute. I will create subplots for each categorical
 variable, enabling me to compare the counts across different categories
 effectively. This step enhances my understanding of how various
 categorical factors are distributed in the dataset.
-
-``` r
-# Define a custom pastel color palette
-pastel_colors <- c("#FFB3BA", "#FFDFBA", "#FFFFBA", "#BAFFBA", "#BAE1FF", "#FFBAF3", "#FFABAB")
-
-# Loop through each categorical column to create horizontal count plots
-# Setting up a layout of 3x3 for every 9 plots
-num_plots <- ncol(cat_attributes)
-plots_per_page <- 9
-
-for (i in seq_along(cat_attributes)) {
-  # Check if a new page is needed and set up layout
-  if ((i - 1) %% plots_per_page == 0) {
-    par(mfrow = c(3, 3), mar = c(5, 10, 4, 2) + 0.1, oma = c(2, 2, 2, 2))  # Increased left margin
-  }
-  
-  # Create a table of counts for the category
-  counts <- table(cat_attributes[[i]])
-  colors <- pastel_colors[1:length(counts)]
-  
-  # Create a horizontal bar plot with narrow bars and clear labels
-  barplot(counts, 
-          main = paste("Count for", names(cat_attributes)[i]), 
-          xlab = names(cat_attributes)[i], 
-          col = colors,    
-          border = "darkblue", 
-          cex.main = 1.2,       # Title size for readability
-          cex.lab = 1.1,        # Label size
-          cex.axis = 1.1,       # Axis size
-          cex.names = 1.1,      # Label size on bars
-          horiz = TRUE,         # Horizontal bar plot
-          las = 1,              # Horizontal axis labels
-          space = 1.5,          # Increased spacing between bars
-          width = 0.6)          # Narrower bar width for better spacing
-}
-```
-
-![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-cat-1.png)<!-- -->
-
-``` r
-# Reset layout after plotting
-par(mfrow = c(1, 1))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-cat-2.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-cat-1.png)<!-- -->![](employee_attrition_analysis_files/figure-gfm/histogram-plotting-cat-2.png)<!-- -->
 
 ### 6.4 Bivariate analysis - hypotheses validation
 
 #### H1. People up to 40s tend to leave. **<span style="color: green;">TRUE</span>**
 
-``` r
-# Convert 'attrition' to a factor to use it as a hue
-df_hratt <- df_hratt %>%
-  mutate(attrition = as.factor(attrition))
-
-# Logistic regression to examine the association between attrition and age
-logistic_model_1 <- glm(attrition ~ age, data = df_hratt, family = binomial)
-
-# Extract p-value from the model to assess significance
-p_value <- summary(logistic_model_1)$coefficients[2, 4]  # P-value for the 'age' variable
-
-# Check p-value and draw conclusions
-if (p_value < 0.05) {
-  result <- "There is a significant association between attrition and age."
-} else {
-  result <- "There is no significant association between attrition and age."
-}
-
-# Print conclusion
-print(result)
-```
-
     ## [1] "There is a significant association between attrition and age."
 
-``` r
-# Create the first plot: Attrition rate per age
-plot1 <- ggplot(data = df_hratt, aes(x = age, fill = attrition)) +
-  geom_bar(position = "fill", color = "black") +  # Adding outline for better clarity
-  scale_fill_manual(values = c("lightcoral", "darkblue")) +  # Set colors for attrition
-  ggtitle("Attrition Rate per Age") +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 20, face = "bold"),
-    legend.title = element_text(size = 15),
-    legend.text = element_text(size = 15),
-    axis.text.x = element_text(angle = 45, hjust = 1)  # Rotate x-axis labels for better readability
-  ) +
-  labs(fill = "Attrition")  # Set legend title
-
-# Create age groups with specified order
-df_hratt <- df_hratt %>%
-  mutate(age_group = factor(case_when(
-    age < 30 ~ "Under 30",
-    age < 40 ~ "30-39",
-    age < 50 ~ "40-49",
-    TRUE ~ "50 and above"
-  ), levels = c("Under 30", "30-39", "40-49", "50 and above")))  # Specify order
-
-# Create the second plot: Proportion of Attrition by Age Group
-plot2 <- ggplot(data = df_hratt, aes(x = age_group, fill = attrition)) +
-  geom_bar(position = "fill", color = "black") +  # Adding outline for better clarity
-  scale_fill_manual(values = c("lightcoral", "darkblue")) +  # Set colors for attrition
-  ggtitle("Proportion of Attrition by Age Group") +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 20, face = "bold"),
-    legend.title = element_text(size = 15),
-    legend.text = element_text(size = 15)
-  ) +
-  labs(fill = "Attrition") +  # Set legend title
-  ylab("Proportion") +  # Add label for y-axis
-  scale_y_continuous(labels = scales::percent)  # Convert y-axis labels to percentages
-
-# Display the plots side by side
-grid.arrange(plot1, plot2, ncol = 2)
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 This analysis looks at how age affects whether people leave or stay
 (attrition). The two variables used are *attrition* (Yes or No) and
@@ -979,42 +616,9 @@ association between age and attrition.
 
 #### H2. People that have higher degree of education tend to leave more. **<span style="color: red;">FALSE</span>**
 
-``` r
-# Create a contingency table
-table_e <- table(df_hratt$attrition, df_hratt$education)
-
-# Perform Chi-squared test
-chi_squared_test_2 <- chisq.test(table_e)
-
-if (chi_squared_test_2$p.value < 0.05) {
-  print("There is a significant association between attrition and education.")
-} else {
-  print("There is no significant association between attrition and education.")
-}
-```
-
     ## [1] "There is no significant association between attrition and education."
 
-``` r
-# Create the rate plot using ggplot2 with softer colors
-ggplot(data = df_hratt, aes(x = education, fill = attrition)) +
-  geom_bar(position = "fill", color = "black") +  # Adding outline for better clarity
-  scale_fill_manual(values = c("lightcoral", "#0072B2")) +  # Softer shades for colors
-  labs(
-    title = "Attrition Rate per Education Field",
-    x = "Education Level \n(1 = Below College ; 2 = College ; 3 = Bachelor ; 4 = Master ; 5 = Doctor)",
-    fill = "Attrition"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 20, face = "bold"),
-    axis.title.x = element_text(size = 16),
-    legend.title = element_text(size = 15),
-    legend.text = element_text(size = 15)
-  )
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 This analysis explores the association between education level and
 attrition. The two variables examined are *attrition* (Yes or No) and
@@ -1031,48 +635,9 @@ attrition rate is approximately 0.125 across all education levels.
 
 #### H3. People who live far from work tend to leave. (Need for further analysis)
 
-``` r
-# Logistic regression to examine the association between attrition and distance_from_home
-logistic_model_3 <- glm(attrition ~ distance_from_home, data = df_hratt, family = binomial)
-
-# Extract p-value from the model to assess significance
-p_value <- summary(logistic_model_3)$coefficients[2, 4]  # P-value for the 'distance_from_home' variable
-
-# Check p-value and draw conclusions
-if (p_value < 0.05) {
-  result <- "There is a significant association between attrition and distance from home."
-} else {
-  result <- "There is no significant association between attrition and distance from home."
-}
-
-# Print conclusion
-print(result)
-```
-
     ## [1] "There is a significant association between attrition and distance from home."
 
-``` r
-# Create the bar plot
-ggplot(df_hratt, aes(x = distance_from_home, fill = attrition)) +
-  geom_bar(position = "fill", color = "black", alpha = 0.7) +
-  labs(
-    title = "Attrition Probabilities per Distance from Home",
-    x = "Distance from Home",
-    y = "Count",
-    fill = "Attrition"
-  ) +
-  scale_fill_manual(values = c("lightcoral", "#0072B2")) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 20, face = "bold"),
-    axis.title.x = element_text(size = 16),
-    axis.title.y = element_text(size = 16),
-    legend.title = element_text(size = 15),
-    legend.text = element_text(size = 15)
-  )
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 The bar chart displays the distribution of attrition (Yes/No) across
 different distances from home. From the chart, it can be observed that
@@ -1090,47 +655,9 @@ further analysis to better understand this relationship.
 
 #### H4. Single people tend to leave more. **<span style="color: green;">TRUE</span>**
 
-``` r
-# Create a contingency table
-table_ms <- table(df_hratt$attrition, df_hratt$marital_status)
-
-# Perform Chi-squared test
-chi_squared_test_4 <- chisq.test(table_ms)
-
-if (chi_squared_test_4$p.value < 0.05) {
-  print("There is a significant association between attrition and marital status.")
-} else {
-  print("There is no significant association between attrition and marital status.")
-}
-```
-
     ## [1] "There is a significant association between attrition and marital status."
 
-``` r
-# Ensure 'attrition' and 'marital_status' columns are factors
-df_hratt <- df_hratt %>%
-  mutate(attrition = as.factor(attrition),
-         marital_status = factor(marital_status, levels = names(sort(table(marital_status), decreasing = TRUE))))
-
-# Create the rate plot with custom colors and ordered marital status
-ggplot(data = df_hratt, aes(x = marital_status, fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "#0072B2")) +  # Set custom color palette
-  labs(
-    title = "Attrition Probabilities per Marital Status",
-    x = "Marital Status",
-    fill = "Attrition"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 20, face = "bold"),
-    axis.title.x = element_text(size = 16),
-    legend.title = element_text(size = 15),
-    legend.text = element_text(size = 15)
-  )
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 This analysis explores the association between marital status and
 attrition. The two variables examined are attrition (Yes or No) and
@@ -1147,43 +674,9 @@ is higher compared to those who are married or divorced.
 
 #### H5. People who make overtime tend to leave more. **<span style="color: green;">TRUE</span>**
 
-``` r
-# Create a contingency table
-table_ot <- table(df_hratt$attrition, df_hratt$over_time)
-
-# Perform Chi-squared test
-chi_squared_test_5 <- chisq.test(table_ot)
-
-if (chi_squared_test_5$p.value < 0.05) {
-  print("There is a significant association between attrition and overtime.")
-} else {
-  print("There is no significant association between attrition and overtime.")
-}
-```
-
     ## [1] "There is a significant association between attrition and overtime."
 
-``` r
-# Create the rate plot with custom colors and ordered overtime
-ggplot(df_hratt, aes(x = over_time, fill = attrition)) +
-  geom_bar(position = "fill", color ="black") +
-  scale_fill_manual(values = c("lightcoral", "#0072B2")) +
-  labs(
-    title = "Attrition Probabilities per overtime",
-    x = "Overtime",
-    fill = "Attrition"
-  ) +
-  scale_x_discrete(labels = c("No" = "No overtime", "Yes" = "With overtime")) +  # Custom x-tick labels
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 20, face = "bold"),
-    axis.title.x = element_text(size = 16),
-    legend.title = element_text(size = 15),
-    legend.text = element_text(size = 15)
-  )
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 This analysis explores the association between overtime and attrition.
 The two variables examined are overtime (Yes or No) and attrition (Yes
@@ -1201,38 +694,9 @@ not.
 
 #### H7. People who present lower performance ratings tend to leave more. **<span style="color: red;">FALSE</span>**
 
-``` r
-# Create a contingency table
-table_pr <- table(df_hratt$attrition, df_hratt$performance_rating)
-
-# Perform Chi-squared test
-chi_squared_test_6 <- chisq.test(table_pr)
-
-if (chi_squared_test_6$p.value < 0.05) {
-  print("There is a significant association between attrition and performance ratings.")
-} else {
-  print("There is no significant association between attrition and performance ratings.")
-}
-```
-
     ## [1] "There is no significant association between attrition and performance ratings."
 
-``` r
-# Create the rate plot for attrition based on performance rating
-ggplot(df_hratt, aes(x = performance_rating, fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "#0072B2")) +
-  labs(title = "Attrition Probabilities per performance rating",
-       x = "Performance rating",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-33-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
 
 This analysis examines the association between performance ratings and
 attrition, specifically testing whether employees with either higher or
@@ -1253,37 +717,9 @@ similar rates of attrition.
 
 #### H8. People who have lower job level tend to leave more. **<span style="color: green;">TRUE</span>**
 
-``` r
-# Create a contingency table
-table_jl <- table(df_hratt$attrition, df_hratt$job_level)
-
-# Perform Chi-squared test
-chi_squared_test_8 <- chisq.test(table_jl)
-
-if (chi_squared_test_8$p.value < 0.05) {
-  print("There is a significant association between attrition and job level.")
-} else {
-  print("There is no significant association between attrition and job level.")
-}
-```
-
     ## [1] "There is a significant association between attrition and job level."
 
-``` r
-ggplot(df_hratt, aes(x = job_level, fill = attrition)) + 
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Adjust colors for attrition categories
-  labs(title = "Attrition Probabilities per job level",
-       x = "Job level \n(1 = Junior ; 2 = Mid ; 3 = Senior ; 4 = Manager; 5 = Director)",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
 
 This analysis examines the association between job level and attrition,
 specifically testing whether employees at lower job levels tend to have
@@ -1307,41 +743,9 @@ higher rates of attrition compared to those at higher levels.
 
 #### H9. People who weren’t promoted for long time tend to leave more. **<span style="color: red;">FALSE</span>**
 
-``` r
-# Logistic regression to examine the association between attrition and years_since_last_promotion
-logistic_model_10 <- glm(attrition ~ years_since_last_promotion, data = df_hratt, family = binomial)
-
-# Extract p-value from the model to assess significance
-p_value <- summary(logistic_model_10)$coefficients[2, 4]  # P-value for the 'years_since_last_promotion' variable
-
-# Check p-value and draw conclusions
-if (p_value < 0.05) {
-  result <- "There is a significant association between attrition and years since last promotion."
-} else {
-  result <- "There is no significant association between attrition and years since last promotion."
-}
-
-# Print conclusion
-print(result)
-```
-
     ## [1] "There is no significant association between attrition and years since last promotion."
 
-``` r
-ggplot(df_hratt, aes(x = years_since_last_promotion, fill = attrition)) + 
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Adjust colors for attrition categories
-  labs(title = "Attrition Probabilities per Years since last promotion",
-       x = "years_since_last_promotion",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-37-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
 
 This analysis examines the association between the length of time since
 an employee’s last promotion and their likelihood of attrition, testing
@@ -1360,41 +764,9 @@ last promotion to attrition rates.
 
 #### H10. People who are in the current role for long time tend to leave more. (Need for further analysis)
 
-``` r
-# Logistic regression to examine the association between attrition and years in current role
-logistic_model_10 <- glm(attrition ~ years_in_current_role, data = df_hratt, family = binomial)
-
-# Extract p-value from the model to assess significance
-p_value <- summary(logistic_model_10)$coefficients[2, 4]  # P-value for the 'years_in_current_role' variable
-
-# Check p-value and draw conclusions
-if (p_value < 0.05) {
-  result <- "There is a significant association between attrition and years in current role."
-} else {
-  result <- "There is no significant association between attrition and years in current role."
-}
-
-# Print conclusion
-print(result)
-```
-
     ## [1] "There is a significant association between attrition and years in current role."
 
-``` r
-ggplot(df_hratt, aes(x = years_in_current_role, fill = attrition)) +
-  geom_bar(position = "fill", alpha = 0.7, color = "black") +
-  labs(title = "Attrition Probabilities per years in current role",
-       x = "Years in current role",
-       fill = "Attrition") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
 
 This analysis examines whether employees who have remained in their
 current role for a longer duration are more likely to leave, testing the
@@ -1417,37 +789,9 @@ observed across all visualized data points.
 
 #### H11. People who feel less involved with the job tend to leave more. **<span style="color: green;">TRUE</span>**
 
-``` r
-# Create a contingency table
-table_ji <- table(df_hratt$attrition, df_hratt$job_involvement)
-
-# Perform Chi-squared test
-chi_squared_test_11 <- chisq.test(table_ji)
-
-if (chi_squared_test_11$p.value < 0.05) {
-  print("There is a significant association between attrition and job involvement.")
-} else {
-  print("There is no significant association between attrition and job involvement.")
-}
-```
-
     ## [1] "There is a significant association between attrition and job involvement."
 
-``` r
-ggplot(df_hratt, aes(x = factor(job_involvement), fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Specify colors for attrition categories
-  labs(title = "Attrition Probabilities per job involvement level",
-       x = "Job involvement level",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
 
 This analysis explores the association between job involvement and
 attrition, testing the hypothesis that people with lower job involvement
@@ -1465,37 +809,9 @@ lower job involvement may be associated with higher attrition rates.
 
 #### H12. People who feel less satisfied with the job tend to leave more. **<span style="color: green;">TRUE</span>**
 
-``` r
-# Create a contingency table
-table_js <- table(df_hratt$attrition, df_hratt$job_satisfaction)
-
-# Perform Chi-squared test
-chi_squared_test_12 <- chisq.test(table_js)
-
-if (chi_squared_test_12$p.value < 0.05) {
-  print("There is a significant association between attrition and job satisfaction.")
-} else {
-  print("There is no significant association between attrition and job satisfaction.")
-}
-```
-
     ## [1] "There is a significant association between attrition and job satisfaction."
 
-``` r
-ggplot(df_hratt, aes(x = factor(job_satisfaction), fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Specify colors for attrition categories
-  labs(title = "Attrition Probabilities per job satisfaction",
-       x = "Job satisfaction",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
 
 This analysis examines the association between job satisfaction and
 attrition, testing the hypothesis that people who are less satisfied
@@ -1513,37 +829,9 @@ job satisfaction may be associated with higher attrition rates.
 
 #### H13. People who feel less satisfied with the environment tend to leave more. **<span style="color: green;">TRUE</span>**
 
-``` r
-# Create a contingency table
-table_es <- table(df_hratt$attrition, df_hratt$environment_satisfaction)
-
-# Perform Chi-squared test
-chi_squared_test_13 <- chisq.test(table_es)
-
-if (chi_squared_test_13$p.value < 0.05) {
-  print("There is a significant association between attrition and environment satisfaction.")
-} else {
-  print("There is no significant association between attrition and environment satisfaction.")
-}
-```
-
     ## [1] "There is a significant association between attrition and environment satisfaction."
 
-``` r
-ggplot(df_hratt, aes(x = factor(environment_satisfaction), fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Specify colors for attrition categories
-  labs(title = "Attrition Probabilities per environment satisfaction",
-       x = "Environment satisfaction",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-45-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
 
 This analysis examines the association between environment satisfaction
 and attrition, testing the hypothesis that lower environment
@@ -1561,38 +849,9 @@ satisfaction is linked to higher attrition.
 
 #### H14. People who have lower work life balance tend to leave more. **<span style="color: green;">TRUE</span>**
 
-``` r
-# Create a contingency table
-table_wl <- table(df_hratt$attrition, df_hratt$work_life_balance)
-
-# Perform Chi-squared test
-chi_squared_test_14 <- chisq.test(table_wl)
-
-# Check the p-value of Chi-square test and draw conclusions
-if (chi_squared_test_14$p.value < 0.05) {
-  print("There is a significant association between attrition and work-life balance (Chi-square test).")
-} else {
-  print("There is no significant association between attrition and work-life balance (Chi-square test).")
-}
-```
-
     ## [1] "There is a significant association between attrition and work-life balance (Chi-square test)."
 
-``` r
-ggplot(df_hratt, aes(x = factor(work_life_balance), fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Specify colors for attrition categories
-  labs(title = "Attrition Probabilities per work life balance",
-       x = "Work life balance \n(1 = Bad ; 2 = Good ; 3 = Better ; 4 = Best)",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
 
 This analysis examines the association between work-life balance and
 attrition, testing the hypothesis that people with lower work-life
@@ -1610,58 +869,9 @@ higher attrition.
 
 #### H15. People who professionally worked for more years tend to not leave. **<span style="color: green;">TRUE</span>**
 
-``` r
-# Logistic regression to examine the association between attrition and total working years
-logistic_model_15 <- glm(attrition ~ total_working_years, data = df_hratt, family = binomial)
-
-# Extract p-value from the model to assess significance
-p_value <- summary(logistic_model_15)$coefficients[2, 4]  # P-value for the 'total_working_years' variable
-
-# Check p-value and draw conclusions
-if (p_value < 0.05) {
-  result <- "There is a significant association between attrition and total working years."
-} else {
-  result <- "There is no significant association between attrition and total working years."
-}
-
-# Print conclusion
-print(result)
-```
-
     ## [1] "There is a significant association between attrition and total working years."
 
-``` r
-# Rate plot for attrition per total_working_years
-count_plot <- ggplot(df_hratt, aes(x = total_working_years, fill = attrition)) + 
-  geom_bar(position = "fill") + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) + 
-  labs(title = "Attrition Probabilities per total working years", 
-       x = "Total working years", 
-       y = "Proportion") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-
-# KDE plot for attrition probabilities by total_working_years
-kde_plot <- ggplot(df_hratt, aes(x = total_working_years, fill = attrition)) + 
-  geom_density(alpha = 0.3) + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) + 
-  labs(title = "Attrition probabilities per total working years", 
-       x = "Total working years", 
-       y = "Density") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-
-# Arrange the two plots vertically using gridExtra
-grid.arrange(count_plot, kde_plot, ncol = 1)
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
 
 This analysis examines the association between total working years and
 attrition, testing the hypothesis that people with more professional
@@ -1677,58 +887,9 @@ the overall trend still supports the hypothesis.
 
 #### H16. People who worked at the same company for more years tend not to leave. **<span style="color: green;">TRUE</span>**
 
-``` r
-# Logistic regression to examine the association between attrition and years at company
-logistic_model_16 <- glm(attrition ~ years_at_company, data = df_hratt, family = binomial)
-
-# Extract p-value from the model to assess significance
-p_value <- summary(logistic_model_16)$coefficients[2, 4]  # P-value for the 'years_at_company' variable
-
-# Check p-value and draw conclusions
-if (p_value < 0.05) {
-  result <- "There is a significant association between attrition and years at company."
-} else {
-  result <- "There is no significant association between attrition and years at company."
-}
-
-# Print conclusion
-print(result)
-```
-
     ## [1] "There is a significant association between attrition and years at company."
 
-``` r
-# Rate plot for attrition per years_at_company
-count_plot <- ggplot(df_hratt, aes(x = years_at_company, fill = attrition)) + 
-  geom_bar(position = "fill") + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) + 
-  labs(title = "Attrition Probabilities per total years at company", 
-       x = "Total years at company", 
-       y = "Proportion") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-
-# KDE plot for attrition probabilities by years_at_company
-kde_plot <- ggplot(df_hratt, aes(x = years_at_company, fill = attrition)) + 
-  geom_density(alpha = 0.3, position = "identity") + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) + 
-  labs(title = "Attrition probabilities per total years at company", 
-       x = "Total years at company", 
-       y = "Density") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-
-# Arrange the two plots vertically using gridExtra
-grid.arrange(count_plot, kde_plot, ncol = 1)
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-51-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
 
 This analysis examines the association between years at the company and
 attrition, testing the hypothesis that employees with more years at the
@@ -1749,42 +910,9 @@ factors may influence attrition at these points.
 
 #### H17. People who are job hoppers tend to leave more. **<span style="color: red;">FALSE</span>**
 
-``` r
-# Logistic regression to examine the association between attrition and the number of companies worked
-logistic_model_17 <- glm(attrition ~ num_companies_worked, data = df_hratt, family = binomial)
-
-# Extract p-value from the model to assess significance
-p_value <- summary(logistic_model_17)$coefficients[2, 4]  # P-value for the 'num_companies_worked' variable
-
-# Check p-value and draw conclusions
-if (p_value < 0.05) {
-  result <- "There is a significant association between attrition and the number of companies worked."
-} else {
-  result <- "There is no significant association between attrition and the number of companies worked."
-}
-
-# Print conclusion
-print(result)
-```
-
     ## [1] "There is no significant association between attrition and the number of companies worked."
 
-``` r
-# Plotting the rate of attrition per number of companies worked
-ggplot(df_hratt, aes(x = num_companies_worked, fill = attrition)) + 
-  geom_bar(position = "fill") + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Add a second color
-  labs(title = "Attrition probabilities per Number of Companies Worked",
-       x = "Number of Companies Worked",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20, hjust = 0.5),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
 
 This analysis examines the association between the number of companies
 worked at and attrition, testing the hypothesis that job hoppers are
@@ -1800,113 +928,13 @@ significantly affect their likelihood of leaving.
 
 #### H18. People who are making more money tend not to leave. (Need for further analysis)
 
-``` r
-# Logistic regression to examine the association between attrition and hourly rate
-logistic_model_hourly <- glm(attrition ~ hourly_rate, data = df_hratt, family = binomial)
-
-# Calculate the odds ratio for hourly rate
-odds_ratio_hourly <- exp(coef(logistic_model_hourly))[2]
-p_value_hourly <- summary(logistic_model_hourly)$coefficients[2, 4]
-
-# Conclusion for hourly rate
-if (p_value_hourly < 0.05) {
-  conclusion_hourly <- paste("Hourly rate is significantly associated with attrition. (Odds Ratio: ", round(odds_ratio_hourly, 2), ")")
-} else {
-  conclusion_hourly <- "Hourly rate is not significantly associated with attrition."
-}
-
-# Logistic regression to examine the relationship between attrition and daily rate
-logistic_model_daily <- glm(attrition ~ daily_rate, data = df_hratt, family = binomial)
-
-# Calculate the odds ratio for daily rate
-odds_ratio_daily <- exp(coef(logistic_model_daily))[2]
-p_value_daily <- summary(logistic_model_daily)$coefficients[2, 4]
-
-# Conclusion for daily rate
-if (p_value_daily < 0.05) {
-  conclusion_daily <- paste("Daily rate is significantly associated with attrition. (Odds Ratio: ", round(odds_ratio_daily, 2), ")")
-} else {
-  conclusion_daily <- "Daily rate is not significantly associated with attrition."
-}
-
-# Logistic regression to examine the relationship between attrition and monthly rate
-logistic_model_monthly <- glm(attrition ~ monthly_rate, data = df_hratt, family = binomial)
-
-# Calculate the odds ratio for monthly rate
-odds_ratio_monthly <- exp(coef(logistic_model_monthly))[2]
-p_value_monthly <- summary(logistic_model_monthly)$coefficients[2, 4]
-
-# Conclusion for monthly rate
-if (p_value_monthly < 0.05) {
-  conclusion_monthly <- paste("Monthly rate is significantly associated with attrition. (Odds Ratio: ", round(odds_ratio_monthly, 2), ")")
-} else {
-  conclusion_monthly <- "Monthly rate is not significantly associated with attrition."
-}
-
-# Print the conclusions
-print(conclusion_hourly)
-```
-
     ## [1] "Hourly rate is not significantly associated with attrition."
-
-``` r
-print(conclusion_daily)
-```
 
     ## [1] "Daily rate is significantly associated with attrition. (Odds Ratio:  1 )"
 
-``` r
-print(conclusion_monthly)
-```
-
     ## [1] "Monthly rate is not significantly associated with attrition."
 
-``` r
-# Separating data
-df_leaves_hourly_rate <- df_hratt[, c("attrition", "hourly_rate")]
-df_leaves_daily_rate <- df_hratt[, c("attrition", "daily_rate")]
-df_leaves_monthly_rate <- df_hratt[, c("attrition", "monthly_rate")]
-
-# Converting attrition column to a factor (categorical variable)
-df_leaves_hourly_rate$attrition <- as.factor(df_leaves_hourly_rate$attrition)
-df_leaves_daily_rate$attrition <- as.factor(df_leaves_daily_rate$attrition)
-df_leaves_monthly_rate$attrition <- as.factor(df_leaves_monthly_rate$attrition)
-
-# Box plot for Hourly Rate by Attrition
-plot1 <- ggplot(df_leaves_hourly_rate, aes(x = attrition, y = hourly_rate, fill = attrition)) +
-  geom_boxplot() +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  labs(title = "Hourly Rate per Attrition",
-       x = "Attrition",
-       y = "Hourly Rate") +
-  theme_minimal(base_size = 14) +
-  theme(plot.title = element_text(size = 14))
-
-# Box plot for Daily Rate by Attrition
-plot2 <- ggplot(df_leaves_daily_rate, aes(x = attrition, y = daily_rate, fill = attrition)) +
-  geom_boxplot() +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  labs(title = "Daily Rate per Attrition",
-       x = "Attrition",
-       y = "Daily Rate") +
-  theme_minimal(base_size = 14) +
-  theme(plot.title = element_text(size = 14))
-
-# Box plot for Monthly Rate by Attrition
-plot3 <- ggplot(df_leaves_monthly_rate, aes(x = attrition, y = monthly_rate, fill = attrition)) +
-  geom_boxplot() +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  labs(title = "Monthly Rate per Attrition",
-       x = "Attrition",
-       y = "Monthly Rate") +
-  theme_minimal(base_size = 14) +
-  theme(plot.title = element_text(size = 14))
-
-# Arrange plots in a grid with spaces in between
-grid.arrange(plot1, plot2, plot3, ncol = 3)
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
 
 This analysis examines the association between compensation and
 attrition, testing the hypothesis that people earning more money are
@@ -1926,36 +954,9 @@ in this analysis.
 
 #### H19. People who have shorter salary hike range tend to leave. **<span style="color: red;">FALSE</span>**
 
-``` r
-# Logistic regression to examine the association between attrition and percent_salary_hike worked
-logistic_model_18 <- glm(attrition ~ percent_salary_hike, data = df_hratt, family = binomial)
-
-# Extract p-value from the model to assess significance
-p_value <- summary(logistic_model_18)$coefficients[2, 4]  # P-value for the 'percent_salary_hike' variable
-
-# Check p-value and draw conclusions
-if (p_value < 0.05) {
-  result <- "There is a significant association between attrition and percent_salary_hike."
-} else {
-  result <- "There is no significant association between attrition and percent_salary_hike."
-}
-
-# Print conclusion
-print(result)
-```
-
     ## [1] "There is no significant association between attrition and percent_salary_hike."
 
-``` r
-ggplot(df_hratt, aes(x = percent_salary_hike, fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  labs(title = "Percent salary hike per attrition", x = "Percent Salary Hike", y = "Count") +
-  theme_minimal(base_size = 14) +
-  theme(plot.title = element_text(size = 14))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
 
 This analysis examines the association between salary hike range and
 attrition, testing the hypothesis that people with shorter salary hike
@@ -1969,42 +970,9 @@ fairly consistent across different ranges of salary hikes.
 
 #### H20. People who received less training last year tend to leave more. (Need further analysis)
 
-``` r
-# Logistic regression to examine the association between attrition and training times last year
-logistic_model_20 <- glm(attrition ~ training_times_last_year, data = df_hratt, family = binomial)
-
-# Extract p-value from the model to assess significance
-p_value <- summary(logistic_model_20)$coefficients[2, 4]  # P-value for the 'training_times_last_year' variable
-
-# Check p-value and draw conclusions
-if (p_value < 0.05) {
-  result <- "There is a significant association between attrition and training times last year."
-} else {
-  result <- "There is no significant association between attrition and training times last year."
-}
-
-# Print conclusion
-print(result)
-```
-
     ## [1] "There is a significant association between attrition and training times last year."
 
-``` r
-# Plotting the rate of attrition per training times last year
-ggplot(df_hratt, aes(x = training_times_last_year, fill = attrition)) +
-  geom_bar(position = "fill") + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  labs(title = "Attrition probabilities per training sessions last year", 
-       x = "Training sessions last year", 
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20, hjust = 0.5),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-59-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
 
 This analysis examines the association between training received last
 year and attrition, testing the hypothesis that people who received less
@@ -2021,61 +989,9 @@ help clarify the relationship between these variables.
 
 #### H21. People who have been working for the same manager for short years tend to leave more. **<span style="color: red;">FALSE</span>**
 
-``` r
-# Logistic regression to examine the association between attrition and relationship satisfaction
-logistic_model_21 <- glm(attrition ~ relationship_satisfaction, data = df_hratt, family = binomial)
-
-# Extract p-value from the model to assess significance
-p_value <- summary(logistic_model_21)$coefficients[2, 4]  # P-value for the 'relationship_satisfaction' variable
-
-# Check p-value and draw conclusions
-if (p_value < 0.05) {
-  result <- "There is a significant association between relationship satisfaction and attrition."
-} else {
-  result <- "There is no significant association between relationship satisfaction and attrition."
-}
-
-# Print conclusion
-print(result)
-```
-
     ## [1] "There is no significant association between relationship satisfaction and attrition."
 
-``` r
-# Plot 1: rate plot for attrition count per years with current manager
-p1 <- ggplot(df_hratt, aes(x = years_with_curr_manager, fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  labs(title = "Attrition probabilities per Years with Current Manager", 
-       x = "Years with Current Manager", 
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20, hjust = 0.5),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-
-# Plot 2: KDE plot for probability density per years with current manager
-p2 <- ggplot() +
-  geom_density(data = df_left, aes(x = years_with_curr_manager, fill = "Employees who left"), 
-               alpha = 0.5, color = "lightcoral") +
-  geom_density(data = df_stayed, aes(x = years_with_curr_manager, fill = "Employees who stayed"), 
-               alpha = 0.5, color = "steelblue") +
-  labs(title = "Attrition Probabilities per Years with Current Manager", 
-       x = "Years with Current Manager", 
-       fill = "Attrition") +
-  scale_fill_manual(values = c("Employees who left" = "lightcoral", "Employees who stayed" = "steelblue")) +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20, hjust = 0.5),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-
-# Arrange plots vertically
-grid.arrange(p1, p2, ncol = 1, heights = c(1, 1.2))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-61-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-60-1.png)<!-- -->
 
 This analysis examines the association between years with the current
 manager and attrition, testing the hypothesis that people who have been
@@ -2092,46 +1008,9 @@ years.
 
 #### H22. People who have lower quality of relationship with the manager tend to leave more. **<span style="color: red;">FALSE</span>**
 
-``` r
-# Create a contingency table for the two variables
-contingency_table <- table(df_hratt$relationship_satisfaction, df_hratt$attrition)
-
-# Perform the Chi-square test
-chi_square_test <- chisq.test(contingency_table)
-
-# Interpret the results
-if (chi_square_test$p.value < 0.05) {
-  conclusion <- "There is a significant association between relationship satisfaction and attrition."
-} else {
-  conclusion <- "There is no significant association between relationship satisfaction and attrition."
-}
-
-# Print the conclusion
-print(conclusion)
-```
-
     ## [1] "There is no significant association between relationship satisfaction and attrition."
 
-``` r
-# Plotting the rate of attrition per relationship satisfaction level
-ggplot(df_hratt, aes(x = relationship_satisfaction, fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  labs(
-    title = "Attrition Probabilities per relationship with current manager satisfaction",
-    x = "Relationship satisfaction \n(1 = Low ; 2 = Medium ; 3 = High ; 4 = Very High)",
-    fill = "Attrition"
-  ) +
-  theme_minimal(base_size = 15) +
-  theme(
-    plot.title = element_text(size = 20, hjust = 0.5),
-    axis.title.x = element_text(size = 16),
-    legend.title = element_text(size = 15),
-    legend.text = element_text(size = 15)
-  )
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-63-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
 
 This analysis examines the association between relationship satisfaction
 with the manager and attrition, testing the hypothesis that people with
@@ -2147,42 +1026,9 @@ Very High having similar, lower rates of attrition.
 
 #### H23. People who travel more frequently tend to leave more. **<span style="color: red;">FALSE</span>**
 
-``` r
-# Create a contingency table for the two variables
-contingency_table <- table(df_hratt$business_travel, df_hratt$attrition)
-
-# Perform the Chi-square test
-chi_square_test <- chisq.test(contingency_table)
-
-# Interpret the results
-if (chi_square_test$p.value < 0.05) {
-  conclusion <- "There is a significant association between business travel and attrition."
-} else {
-  conclusion <- "There is no significant association between business travel and attrition."
-}
-
-# Print the conclusion
-print(conclusion)
-```
-
     ## [1] "There is a significant association between business travel and attrition."
 
-``` r
-# Plotting the rate of attrition per business travel frequency
-ggplot(df_hratt, aes(x = business_travel, fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  labs(title = "Attrition Probabilities per business travel frequency",
-       x = "Business travel frequency",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20, hjust = 0.5),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-65-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-64-1.png)<!-- -->
 
 This analysis examines the association between business travel frequency
 and attrition, testing the hypothesis that people who travel more
@@ -2197,41 +1043,9 @@ Rarely,” and the lowest attrition rate is in the “Non-Travel” category.
 
 #### H24. Which departments has more turnover?
 
-``` r
-# Create a contingency table for the two variables
-contingency_table <- table(df_hratt$department, df_hratt$attrition)
-
-# Perform the Chi-square test
-chi_square_test <- chisq.test(contingency_table)
-
-# Interpretation of results
-if(chi_square_test$p.value < 0.05) {
-  print("There is a significant association in attrition rates across departments.")
-} else {
-  print("There is no significant association in attrition rates across departments.")
-}
-```
-
     ## [1] "There is a significant association in attrition rates across departments."
 
-``` r
-# Plotting the rate of attrition per department
-ggplot(df_hratt, aes(x = department, fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  labs(title = "Attrition Probabilities per department",
-       x = "Department",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20, hjust = 0.5),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15)) +
-  # Ordering departments by frequency
-  scale_x_discrete(limits = rev(names(sort(table(df_hratt$department)))))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-67-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-66-1.png)<!-- -->
 
 This analysis examines which departments have higher turnover, testing
 the hypothesis that some departments experience more attrition than
@@ -2248,14 +1062,6 @@ lowest attrition rate.
 
 #### H25. Which education field has more turnover? (Need for further analysis)
 
-``` r
-# Create a contingency table for education field and attrition
-contingency_table_education <- table(df_hratt$education_field, df_hratt$attrition)
-
-# Print the contingency table to check the count of observations in each cell
-print(contingency_table_education)
-```
-
     ##                   
     ##                     No Yes
     ##   Human Resources   20   7
@@ -2265,43 +1071,12 @@ print(contingency_table_education)
     ##   Other             71  11
     ##   Technical Degree 100  32
 
-``` r
-# Perform the Chi-square test
-chi_square_test_education <- chisq.test(contingency_table_education)
-```
-
     ## Warning in stats::chisq.test(x, y, ...): Chi-squared approximation may be
     ## incorrect
 
-``` r
-# Interpretation of results
-if (chi_square_test_education$p.value < 0.05) {
-  print("There is a significant association between education field and attrition.")
-} else {
-  print("There is no significant association between education field and attrition.")
-}
-```
-
     ## [1] "There is a significant association between education field and attrition."
 
-``` r
-# Plotting the rate of attrition per education field
-ggplot(df_hratt, aes(x = education_field, fill = attrition)) +
-  geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
-  labs(title = "Attrition Probabilities per education field",
-       x = "Education Field",
-       fill = "Attrition") +
-  theme_minimal(base_size = 15) +
-  theme(plot.title = element_text(size = 20, hjust = 0.5),
-        axis.title.x = element_text(size = 16),
-        legend.title = element_text(size = 15),
-        legend.text = element_text(size = 15)) +
-  # Ordering education fields by frequency
-  scale_x_discrete(limits = names(sort(table(df_hratt$education_field), decreasing = TRUE)))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-69-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-68-1.png)<!-- -->
 
 This analysis examines which education field has higher turnover,
 testing the hypothesis that certain education fields experience more
@@ -2354,27 +1129,7 @@ Summary of Hypotheses Testing Results
 
 #### 6.5.1. Correlation between numerical attributes
 
-``` r
-# Calculate the correlation matrix
-correlation <- cor(num_attributes, method = "pearson")
-
-# Plot the correlation heatmap
-ggcorrplot(correlation, 
-           method = "square", 
-           lab = TRUE,               # Display correlation coefficients in cells
-           lab_size = 3,             # Slightly larger font size for better readability
-           colors = c("#4575b4", "white", "#d73027"),  # High-contrast color palette
-           title = "Correlation Heatmap of Numerical Variables",
-           ggtheme = theme_minimal(base_size = 12),    # Increase base font size for larger plot
-           legend.title = "Correlation") +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
-    axis.text.y = element_text(size = 10)
-  )
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-71-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
 
 **Analysis of the Data:**
 
@@ -2434,63 +1189,6 @@ hours:
 
 #### 6.5.2. Correlations between categorical attributes
 
-``` r
-# Define the function to calculate Cramér's V for all combinations of categorical variables
-calculate_cramers_v <- function(data) {
-  
-  # Function to calculate Cramér's V
-  cramers_v <- function(x, y) {
-    # Convert to factors (in case they are not)
-    x <- as.factor(x)
-    y <- as.factor(y)
-    
-    # Create contingency table
-    contingency_table <- table(x, y)
-    
-    # Perform the chi-squared test
-    chi2_result <- chisq.test(contingency_table)
-    
-    # Get the number of observations, and dimensions of the contingency table
-    n <- sum(contingency_table)
-    r <- nrow(contingency_table)
-    k <- ncol(contingency_table)
-    
-    # Calculate Cramér's V
-    cramer_v_value <- sqrt((chi2_result$statistic / n) / min(r - 1, k - 1))
-    return(cramer_v_value)
-  }
-  
-  # Calculate Cramér's V for each combination of variables
-  a1 <- cramers_v(data$job_role, data$job_role)
-  a2 <- cramers_v(data$job_role, data$department)
-  a3 <- cramers_v(data$job_role, data$business_travel)
-  
-  a4 <- cramers_v(data$department, data$job_role)
-  a5 <- cramers_v(data$department, data$department)
-  a6 <- cramers_v(data$department, data$business_travel)
-  
-  a7 <- cramers_v(data$over_time, data$job_role)
-  a8 <- cramers_v(data$over_time, data$department)
-  a9 <- cramers_v(data$over_time, data$business_travel)
-  
-  # Create a data frame to store the correlation values
-  correlation_matrix <- data.frame(
-    job_role = c(a1, a2, a3),
-    department = c(a4, a5, a6),
-    business_travel = c(a7, a8, a9)
-  )
-  
-  # Set the index to the column names
-  row.names(correlation_matrix) <- colnames(correlation_matrix)
-  
-  # Return the correlation matrix
-  return(correlation_matrix)
-}
-
-# Calculate Cramér's V correlation matrix for your dataset
-correlation_result <- calculate_cramers_v(cat_attributes)
-```
-
     ## Warning in stats::chisq.test(x, y, ...): Chi-squared approximation may be
     ## incorrect
     ## Warning in stats::chisq.test(x, y, ...): Chi-squared approximation may be
@@ -2499,35 +1197,13 @@ correlation_result <- calculate_cramers_v(cat_attributes)
     ## incorrect
     ## Warning in stats::chisq.test(x, y, ...): Chi-squared approximation may be
     ## incorrect
-
-``` r
-print(correlation_result)
-```
 
     ##                   job_role department business_travel
     ## job_role        1.00000000 0.93939265     0.066845326
     ## department      0.93939265 1.00000000     0.007979847
     ## business_travel 0.06385489 0.00828664     0.044060835
 
-``` r
-# Reshape the correlation matrix to long format for ggplot
-correlation_long <- correlation_result %>%
-  as.data.frame() %>%
-  rownames_to_column(var = "Var1") %>%
-  pivot_longer(cols = -Var1, names_to = "Var2", values_to = "value")
-
-# Plotting the heatmap
-ggplot(correlation_long, aes(Var1, Var2, fill = value)) +
-  geom_tile() +
-  scale_fill_gradient(low = "white", high = "#A6D4D1") +  # Soft blue-green gradient
-  geom_text(aes(label = round(value, 2)), color = "black", size = 6) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  labs(title = "Cramér's V Correlation Heatmap", x = "Variables", y = "Variables") +
-  theme(plot.title = element_text(hjust = 0.5))
-```
-
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-72-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-71-1.png)<!-- -->
 
 The correlation analysis between job_role, department, and
 business_travel shows:
