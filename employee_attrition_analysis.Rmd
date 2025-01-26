@@ -138,7 +138,7 @@ Note: Because the data set is fictional, it is free of any NaN values.
 
 ### 3.7. Descriptive statistics
 #### 3.7.1. Separate Numerical and Categorical Variables
-```{r, echo=FALSE}
+```{r}
 # Separate numerical and categorical attributes
 num_attributes <- df_hratt_cln %>% select(where(is.numeric))
 cat_attributes <- df_hratt_cln %>% select(where(negate(is.numeric)))
@@ -269,7 +269,7 @@ write.csv(df_hratt_cln, file = 'dataset/Human_Resources_clean.csv', row.names = 
 
 ## 5. Feature Engineering
 ### 5.1. Loading data set
-```{r, echo=FALSE}
+```{r}
 # Loads data set
 df_hratt <- read_csv("dataset/Human_Resources_clean.csv")
 ```
@@ -302,7 +302,7 @@ df_hratt[sample(nrow(df_hratt), 1), ]
 When I examine my data, I notice that some categories are represented by numbers. For instance, education levels might be coded numerically (e.g., 1 for 'Below College,' 2 for 'College,' etc.). This numerical representation makes the data more challenging to interpret. 
 
 To enhance clarity, I will convert these numbers into descriptive labels. By replacing the numerical codes with clear names, my data will become easier to read and understand, ultimately improving the quality of my analysis.
-```{r, echo=FALSE}
+```{r}
 # Convert education levels
 df_hratt <- df_hratt %>%
   mutate(education = recode(education, 
@@ -370,17 +370,17 @@ df_hratt <- df_hratt %>%
                                     `4` = "Best"))
 ```
 ### 5.4. Checkpoint
-```{r, echo=FALSE}
+```{r}
 # Save the current data set state
 write.csv(df_hratt, file = "dataset/Human_Resources_fe.csv", row.names = FALSE)
 ```
 ## 6. Exploratory data analysis
 ### 6.1. Loading data set
-```{r, echo=FALSE}
+```{r}
 df_hratt <- read.csv("dataset/Human_Resources_fe.csv")
 ```
 ### 6.2. Separating data types
-```{r, echo=FALSE}
+```{r}
 #selects only numerical attributes
 num_attributes <- df_hratt %>% select(where(is.numeric))
 #selects only categorical attributes
@@ -512,6 +512,9 @@ df_hratt <- df_hratt %>%
 # Logistic regression to examine the association between attrition and age
 logistic_model_1 <- glm(attrition ~ age, data = df_hratt, family = binomial)
 
+print(logistic_model_1)
+```
+```{r, echo=FALSE}
 # Extract p-value from the model to assess significance
 p_value <- summary(logistic_model_1)$coefficients[2, 4]  # P-value for the 'age' variable
 
@@ -525,12 +528,11 @@ if (p_value < 0.05) {
 # Print conclusion
 print(result)
 ```
-
 ```{r, echo=FALSE, fig.width=12, fig.height=6}
 # Create the first plot: Attrition rate per age
 plot1 <- ggplot(data = df_hratt, aes(x = age, fill = attrition)) +
   geom_bar(position = "fill", color = "black") +  # Adding outline for better clarity
-  scale_fill_manual(values = c("lightcoral", "darkblue")) +  # Set colors for attrition
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Set colors for attrition
   ggtitle("Attrition Rate per Age") +
   theme_minimal() +
   theme(
@@ -553,7 +555,7 @@ df_hratt <- df_hratt %>%
 # Create the second plot: Proportion of Attrition by Age Group
 plot2 <- ggplot(data = df_hratt, aes(x = age_group, fill = attrition)) +
   geom_bar(position = "fill", color = "black") +  # Adding outline for better clarity
-  scale_fill_manual(values = c("lightcoral", "darkblue")) +  # Set colors for attrition
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Set colors for attrition
   ggtitle("Proportion of Attrition by Age Group") +
   theme_minimal() +
   theme(
@@ -583,18 +585,20 @@ table_e <- table(df_hratt$attrition, df_hratt$education)
 # Perform Chi-squared test
 chi_squared_test_2 <- chisq.test(table_e)
 
+print(chi_squared_test_2)
+```
+```{r,echo=FALSE}
 if (chi_squared_test_2$p.value < 0.05) {
   print("There is a significant association between attrition and education.")
 } else {
   print("There is no significant association between attrition and education.")
 }
 ```
-
 ```{r, echo=FALSE, fig.width=12, fig.height=6}
 # Create the rate plot using ggplot2 with softer colors
 ggplot(data = df_hratt, aes(x = education, fill = attrition)) +
   geom_bar(position = "fill", color = "black") +  # Adding outline for better clarity
-  scale_fill_manual(values = c("lightcoral", "#0072B2")) +  # Softer shades for colors
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Softer shades for colors
   labs(
     title = "Attrition Rate per Education Field",
     x = "Education Level \n(1 = Below College ; 2 = College ; 3 = Bachelor ; 4 = Master ; 5 = Doctor)",
@@ -620,6 +624,9 @@ The analysis does not support the hypothesis H2.
 # Logistic regression to examine the association between attrition and distance_from_home
 logistic_model_3 <- glm(attrition ~ distance_from_home, data = df_hratt, family = binomial)
 
+print(logistic_model_3)
+```
+```{r, echo=FALSE}
 # Extract p-value from the model to assess significance
 p_value <- summary(logistic_model_3)$coefficients[2, 4]  # P-value for the 'distance_from_home' variable
 
@@ -633,7 +640,6 @@ if (p_value < 0.05) {
 # Print conclusion
 print(result)
 ```
-
 ```{r, echo=FALSE, fig.width=12, fig.height=6}
 # Create the bar plot
 ggplot(df_hratt, aes(x = distance_from_home, fill = attrition)) +
@@ -644,7 +650,7 @@ ggplot(df_hratt, aes(x = distance_from_home, fill = attrition)) +
     y = "Count",
     fill = "Attrition"
   ) +
-  scale_fill_manual(values = c("lightcoral", "#0072B2")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   theme_minimal() +
   theme(
     plot.title = element_text(size = 20, face = "bold"),
@@ -669,13 +675,15 @@ table_ms <- table(df_hratt$attrition, df_hratt$marital_status)
 # Perform Chi-squared test
 chi_squared_test_4 <- chisq.test(table_ms)
 
+print(chi_squared_test_4)
+```
+```{r,echo=FALSE}
 if (chi_squared_test_4$p.value < 0.05) {
   print("There is a significant association between attrition and marital status.")
 } else {
   print("There is no significant association between attrition and marital status.")
 }
 ```
-
 ```{r, echo=FALSE, fig.width=12, fig.height=6}
 # Ensure 'attrition' and 'marital_status' columns are factors
 df_hratt <- df_hratt %>%
@@ -685,7 +693,7 @@ df_hratt <- df_hratt %>%
 # Create the rate plot with custom colors and ordered marital status
 ggplot(data = df_hratt, aes(x = marital_status, fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "#0072B2")) +  # Set custom color palette
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Set custom color palette
   labs(
     title = "Attrition Probabilities per Marital Status",
     x = "Marital Status",
@@ -714,18 +722,20 @@ table_ot <- table(df_hratt$attrition, df_hratt$over_time)
 # Perform Chi-squared test
 chi_squared_test_5 <- chisq.test(table_ot)
 
+print(chi_squared_test_5)
+```
+```{r,echo=FALSE}
 if (chi_squared_test_5$p.value < 0.05) {
   print("There is a significant association between attrition and overtime.")
 } else {
   print("There is no significant association between attrition and overtime.")
 }
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Create the rate plot with custom colors and ordered overtime
 ggplot(df_hratt, aes(x = over_time, fill = attrition)) +
   geom_bar(position = "fill", color ="black") +
-  scale_fill_manual(values = c("lightcoral", "#0072B2")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(
     title = "Attrition Probabilities per overtime",
     x = "Overtime",
@@ -757,18 +767,20 @@ table_pr <- table(df_hratt$attrition, df_hratt$performance_rating)
 # Perform Chi-squared test
 chi_squared_test_6 <- chisq.test(table_pr)
 
+print(chi_squared_test_6)
+```
+```{r,echo=FALSE}
 if (chi_squared_test_6$p.value < 0.05) {
   print("There is a significant association between attrition and performance ratings.")
 } else {
   print("There is no significant association between attrition and performance ratings.")
 }
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Create the rate plot for attrition based on performance rating
 ggplot(df_hratt, aes(x = performance_rating, fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "#0072B2")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(title = "Attrition Probabilities per performance rating",
        x = "Performance rating",
        fill = "Attrition") +
@@ -793,17 +805,19 @@ table_jl <- table(df_hratt$attrition, df_hratt$job_level)
 # Perform Chi-squared test
 chi_squared_test_8 <- chisq.test(table_jl)
 
+print(chi_squared_test_8)
+```
+```{r,echo=FALSE}
 if (chi_squared_test_8$p.value < 0.05) {
   print("There is a significant association between attrition and job level.")
 } else {
   print("There is no significant association between attrition and job level.")
 }
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 ggplot(df_hratt, aes(x = job_level, fill = attrition)) + 
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Adjust colors for attrition categories
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Adjust colors for attrition categories
   labs(title = "Attrition Probabilities per job level",
        x = "Job level \n(1 = Junior ; 2 = Mid ; 3 = Senior ; 4 = Manager; 5 = Director)",
        fill = "Attrition") +
@@ -827,6 +841,9 @@ The analysis supports hypothesis H8.
 # Logistic regression to examine the association between attrition and years_since_last_promotion
 logistic_model_10 <- glm(attrition ~ years_since_last_promotion, data = df_hratt, family = binomial)
 
+print(logistic_model_10)
+```
+```{r,echo=FALSE}
 # Extract p-value from the model to assess significance
 p_value <- summary(logistic_model_10)$coefficients[2, 4]  # P-value for the 'years_since_last_promotion' variable
 
@@ -840,11 +857,10 @@ if (p_value < 0.05) {
 # Print conclusion
 print(result)
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 ggplot(df_hratt, aes(x = years_since_last_promotion, fill = attrition)) + 
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Adjust colors for attrition categories
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Adjust colors for attrition categories
   labs(title = "Attrition Probabilities per Years since last promotion",
        x = "years_since_last_promotion",
        fill = "Attrition") +
@@ -866,6 +882,9 @@ The analysis does not support hypothesis H9.
 # Logistic regression to examine the association between attrition and years in current role
 logistic_model_10 <- glm(attrition ~ years_in_current_role, data = df_hratt, family = binomial)
 
+print(logistic_model_10)
+```
+```{r,echo=FALSE}
 # Extract p-value from the model to assess significance
 p_value <- summary(logistic_model_10)$coefficients[2, 4]  # P-value for the 'years_in_current_role' variable
 
@@ -879,14 +898,13 @@ if (p_value < 0.05) {
 # Print conclusion
 print(result)
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 ggplot(df_hratt, aes(x = years_in_current_role, fill = attrition)) +
   geom_bar(position = "fill", alpha = 0.7, color = "black") +
   labs(title = "Attrition Probabilities per years in current role",
        x = "Years in current role",
        fill = "Attrition") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   theme_minimal(base_size = 15) +
   theme(plot.title = element_text(size = 20),
         axis.title.x = element_text(size = 16),
@@ -908,17 +926,19 @@ table_ji <- table(df_hratt$attrition, df_hratt$job_involvement)
 # Perform Chi-squared test
 chi_squared_test_11 <- chisq.test(table_ji)
 
+print(chi_squared_test_11)
+```
+```{r,echo=FALSE}
 if (chi_squared_test_11$p.value < 0.05) {
   print("There is a significant association between attrition and job involvement.")
 } else {
   print("There is no significant association between attrition and job involvement.")
 }
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 ggplot(df_hratt, aes(x = factor(job_involvement), fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Specify colors for attrition categories
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Specify colors for attrition categories
   labs(title = "Attrition Probabilities per job involvement level",
        x = "Job involvement level",
        fill = "Attrition") +
@@ -942,17 +962,19 @@ table_js <- table(df_hratt$attrition, df_hratt$job_satisfaction)
 # Perform Chi-squared test
 chi_squared_test_12 <- chisq.test(table_js)
 
+print(chi_squared_test_12)
+```
+```{r,echo=FALSE}
 if (chi_squared_test_12$p.value < 0.05) {
   print("There is a significant association between attrition and job satisfaction.")
 } else {
   print("There is no significant association between attrition and job satisfaction.")
 }
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 ggplot(df_hratt, aes(x = factor(job_satisfaction), fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Specify colors for attrition categories
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Specify colors for attrition categories
   labs(title = "Attrition Probabilities per job satisfaction",
        x = "Job satisfaction",
        fill = "Attrition") +
@@ -976,17 +998,19 @@ table_es <- table(df_hratt$attrition, df_hratt$environment_satisfaction)
 # Perform Chi-squared test
 chi_squared_test_13 <- chisq.test(table_es)
 
+print(chi_squared_test_13)
+```
+```{r, echo=FALSE}
 if (chi_squared_test_13$p.value < 0.05) {
   print("There is a significant association between attrition and environment satisfaction.")
 } else {
   print("There is no significant association between attrition and environment satisfaction.")
 }
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 ggplot(df_hratt, aes(x = factor(environment_satisfaction), fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Specify colors for attrition categories
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Specify colors for attrition categories
   labs(title = "Attrition Probabilities per environment satisfaction",
        x = "Environment satisfaction",
        fill = "Attrition") +
@@ -1010,6 +1034,9 @@ table_wl <- table(df_hratt$attrition, df_hratt$work_life_balance)
 # Perform Chi-squared test
 chi_squared_test_14 <- chisq.test(table_wl)
 
+print(chi_squared_test_14)
+```
+```{r, echo=FALSE}
 # Check the p-value of Chi-square test and draw conclusions
 if (chi_squared_test_14$p.value < 0.05) {
   print("There is a significant association between attrition and work-life balance (Chi-square test).")
@@ -1017,11 +1044,10 @@ if (chi_squared_test_14$p.value < 0.05) {
   print("There is no significant association between attrition and work-life balance (Chi-square test).")
 }
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 ggplot(df_hratt, aes(x = factor(work_life_balance), fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Specify colors for attrition categories
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Specify colors for attrition categories
   labs(title = "Attrition Probabilities per work life balance",
        x = "Work life balance \n(1 = Bad ; 2 = Good ; 3 = Better ; 4 = Best)",
        fill = "Attrition") +
@@ -1042,6 +1068,9 @@ This analysis examines the association between work-life balance and attrition, 
 # Logistic regression to examine the association between attrition and total working years
 logistic_model_15 <- glm(attrition ~ total_working_years, data = df_hratt, family = binomial)
 
+print(logistic_model_15)
+```
+```{r, echo=FALSE}
 # Extract p-value from the model to assess significance
 p_value <- summary(logistic_model_15)$coefficients[2, 4]  # P-value for the 'total_working_years' variable
 
@@ -1055,12 +1084,11 @@ if (p_value < 0.05) {
 # Print conclusion
 print(result)
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Rate plot for attrition per total_working_years
 count_plot <- ggplot(df_hratt, aes(x = total_working_years, fill = attrition)) + 
   geom_bar(position = "fill") + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) + 
+  scale_fill_manual(values = c("lightgray", "blue")) + 
   labs(title = "Attrition Probabilities per total working years", 
        x = "Total working years", 
        y = "Proportion") +
@@ -1073,7 +1101,7 @@ count_plot <- ggplot(df_hratt, aes(x = total_working_years, fill = attrition)) +
 # KDE plot for attrition probabilities by total_working_years
 kde_plot <- ggplot(df_hratt, aes(x = total_working_years, fill = attrition)) + 
   geom_density(alpha = 0.3) + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) + 
+  scale_fill_manual(values = c("lightgray", "blue")) + 
   labs(title = "Attrition probabilities per total working years", 
        x = "Total working years", 
        y = "Density") +
@@ -1097,6 +1125,9 @@ This analysis examines the association between total working years and attrition
 # Logistic regression to examine the association between attrition and years at company
 logistic_model_16 <- glm(attrition ~ years_at_company, data = df_hratt, family = binomial)
 
+print(logistic_model_16)
+```
+```{r, echo=FALSE}
 # Extract p-value from the model to assess significance
 p_value <- summary(logistic_model_16)$coefficients[2, 4]  # P-value for the 'years_at_company' variable
 
@@ -1110,12 +1141,11 @@ if (p_value < 0.05) {
 # Print conclusion
 print(result)
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Rate plot for attrition per years_at_company
 count_plot <- ggplot(df_hratt, aes(x = years_at_company, fill = attrition)) + 
   geom_bar(position = "fill") + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) + 
+  scale_fill_manual(values = c("lightgray", "blue")) + 
   labs(title = "Attrition Probabilities per total years at company", 
        x = "Total years at company", 
        y = "Proportion") +
@@ -1128,7 +1158,7 @@ count_plot <- ggplot(df_hratt, aes(x = years_at_company, fill = attrition)) +
 # KDE plot for attrition probabilities by years_at_company
 kde_plot <- ggplot(df_hratt, aes(x = years_at_company, fill = attrition)) + 
   geom_density(alpha = 0.3, position = "identity") + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) + 
+  scale_fill_manual(values = c("lightgray", "blue")) + 
   labs(title = "Attrition probabilities per total years at company", 
        x = "Total years at company", 
        y = "Density") +
@@ -1154,6 +1184,9 @@ The bar chart shows a general decline in attrition up to 22 years, followed by a
 # Logistic regression to examine the association between attrition and the number of companies worked
 logistic_model_17 <- glm(attrition ~ num_companies_worked, data = df_hratt, family = binomial)
 
+print(logistic_model_17)
+```
+```{r, echo=FALSE}
 # Extract p-value from the model to assess significance
 p_value <- summary(logistic_model_17)$coefficients[2, 4]  # P-value for the 'num_companies_worked' variable
 
@@ -1167,12 +1200,11 @@ if (p_value < 0.05) {
 # Print conclusion
 print(result)
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Plotting the rate of attrition per number of companies worked
 ggplot(df_hratt, aes(x = num_companies_worked, fill = attrition)) + 
   geom_bar(position = "fill") + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +  # Add a second color
+  scale_fill_manual(values = c("lightgray", "blue")) +  # Add a second color
   labs(title = "Attrition probabilities per Number of Companies Worked",
        x = "Number of Companies Worked",
        fill = "Attrition") +
@@ -1193,6 +1225,8 @@ This analysis examines the association between the number of companies worked at
 # Logistic regression to examine the association between attrition and hourly rate
 logistic_model_hourly <- glm(attrition ~ hourly_rate, data = df_hratt, family = binomial)
 
+print(logistic_model_hourly)
+
 # Calculate the odds ratio for hourly rate
 odds_ratio_hourly <- exp(coef(logistic_model_hourly))[2]
 p_value_hourly <- summary(logistic_model_hourly)$coefficients[2, 4]
@@ -1207,6 +1241,8 @@ if (p_value_hourly < 0.05) {
 # Logistic regression to examine the relationship between attrition and daily rate
 logistic_model_daily <- glm(attrition ~ daily_rate, data = df_hratt, family = binomial)
 
+print(logistic_model_daily)
+
 # Calculate the odds ratio for daily rate
 odds_ratio_daily <- exp(coef(logistic_model_daily))[2]
 p_value_daily <- summary(logistic_model_daily)$coefficients[2, 4]
@@ -1220,6 +1256,8 @@ if (p_value_daily < 0.05) {
 
 # Logistic regression to examine the relationship between attrition and monthly rate
 logistic_model_monthly <- glm(attrition ~ monthly_rate, data = df_hratt, family = binomial)
+
+print(logistic_model_monthly)
 
 # Calculate the odds ratio for monthly rate
 odds_ratio_monthly <- exp(coef(logistic_model_monthly))[2]
@@ -1252,7 +1290,7 @@ df_leaves_monthly_rate$attrition <- as.factor(df_leaves_monthly_rate$attrition)
 # Box plot for Hourly Rate by Attrition
 plot1 <- ggplot(df_leaves_hourly_rate, aes(x = attrition, y = hourly_rate, fill = attrition)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(title = "Hourly Rate per Attrition",
        x = "Attrition",
        y = "Hourly Rate") +
@@ -1262,7 +1300,7 @@ plot1 <- ggplot(df_leaves_hourly_rate, aes(x = attrition, y = hourly_rate, fill 
 # Box plot for Daily Rate by Attrition
 plot2 <- ggplot(df_leaves_daily_rate, aes(x = attrition, y = daily_rate, fill = attrition)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(title = "Daily Rate per Attrition",
        x = "Attrition",
        y = "Daily Rate") +
@@ -1272,7 +1310,7 @@ plot2 <- ggplot(df_leaves_daily_rate, aes(x = attrition, y = daily_rate, fill = 
 # Box plot for Monthly Rate by Attrition
 plot3 <- ggplot(df_leaves_monthly_rate, aes(x = attrition, y = monthly_rate, fill = attrition)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(title = "Monthly Rate per Attrition",
        x = "Attrition",
        y = "Monthly Rate") +
@@ -1293,6 +1331,9 @@ This analysis examines the association between compensation and attrition, testi
 # Logistic regression to examine the association between attrition and percent_salary_hike worked
 logistic_model_18 <- glm(attrition ~ percent_salary_hike, data = df_hratt, family = binomial)
 
+print(logistic_model_18)
+```
+```{r, echo=FALSE}
 # Extract p-value from the model to assess significance
 p_value <- summary(logistic_model_18)$coefficients[2, 4]  # P-value for the 'percent_salary_hike' variable
 
@@ -1306,11 +1347,10 @@ if (p_value < 0.05) {
 # Print conclusion
 print(result)
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 ggplot(df_hratt, aes(x = percent_salary_hike, fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(title = "Percent salary hike per attrition", x = "Percent Salary Hike", y = "Count") +
   theme_minimal(base_size = 14) +
   theme(plot.title = element_text(size = 14))
@@ -1326,6 +1366,9 @@ This analysis examines the association between salary hike range and attrition, 
 # Logistic regression to examine the association between attrition and training times last year
 logistic_model_20 <- glm(attrition ~ training_times_last_year, data = df_hratt, family = binomial)
 
+print(logistic_model_20)
+```
+```{r, echo=FALSE}
 # Extract p-value from the model to assess significance
 p_value <- summary(logistic_model_20)$coefficients[2, 4]  # P-value for the 'training_times_last_year' variable
 
@@ -1339,12 +1382,11 @@ if (p_value < 0.05) {
 # Print conclusion
 print(result)
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Plotting the rate of attrition per training times last year
 ggplot(df_hratt, aes(x = training_times_last_year, fill = attrition)) +
   geom_bar(position = "fill") + 
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(title = "Attrition probabilities per training sessions last year", 
        x = "Training sessions last year", 
        fill = "Attrition") +
@@ -1365,6 +1407,9 @@ This analysis examines the association between training received last year and a
 # Logistic regression to examine the association between attrition and relationship satisfaction
 logistic_model_21 <- glm(attrition ~ relationship_satisfaction, data = df_hratt, family = binomial)
 
+print(logistic_model_21)
+```
+```{r, echo=FALSE}
 # Extract p-value from the model to assess significance
 p_value <- summary(logistic_model_21)$coefficients[2, 4]  # P-value for the 'relationship_satisfaction' variable
 
@@ -1378,12 +1423,11 @@ if (p_value < 0.05) {
 # Print conclusion
 print(result)
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Plot 1: rate plot for attrition count per years with current manager
 p1 <- ggplot(df_hratt, aes(x = years_with_curr_manager, fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(title = "Attrition probabilities per Years with Current Manager", 
        x = "Years with Current Manager", 
        fill = "Attrition") +
@@ -1396,13 +1440,13 @@ p1 <- ggplot(df_hratt, aes(x = years_with_curr_manager, fill = attrition)) +
 # Plot 2: KDE plot for probability density per years with current manager
 p2 <- ggplot() +
   geom_density(data = df_left, aes(x = years_with_curr_manager, fill = "Employees who left"), 
-               alpha = 0.5, color = "lightcoral") +
+               alpha = 0.5, color = "lightgray") +
   geom_density(data = df_stayed, aes(x = years_with_curr_manager, fill = "Employees who stayed"), 
-               alpha = 0.5, color = "steelblue") +
+               alpha = 0.5, color = "blue") +
   labs(title = "Attrition Probabilities per Years with Current Manager", 
        x = "Years with Current Manager", 
        fill = "Attrition") +
-  scale_fill_manual(values = c("Employees who left" = "lightcoral", "Employees who stayed" = "steelblue")) +
+  scale_fill_manual(values = c("Employees who left" = "lightgray", "Employees who stayed" = "blue")) +
   theme_minimal(base_size = 15) +
   theme(plot.title = element_text(size = 20, hjust = 0.5),
         axis.title.x = element_text(size = 16),
@@ -1426,6 +1470,9 @@ contingency_table <- table(df_hratt$relationship_satisfaction, df_hratt$attritio
 # Perform the Chi-square test
 chi_square_test <- chisq.test(contingency_table)
 
+print(chi_square_test)
+```
+```{r, echo=FALSE}
 # Interpret the results
 if (chi_square_test$p.value < 0.05) {
   conclusion <- "There is a significant association between relationship satisfaction and attrition."
@@ -1436,12 +1483,11 @@ if (chi_square_test$p.value < 0.05) {
 # Print the conclusion
 print(conclusion)
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Plotting the rate of attrition per relationship satisfaction level
 ggplot(df_hratt, aes(x = relationship_satisfaction, fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(
     title = "Attrition Probabilities per relationship with current manager satisfaction",
     x = "Relationship satisfaction \n(1 = Low ; 2 = Medium ; 3 = High ; 4 = Very High)",
@@ -1469,6 +1515,9 @@ contingency_table <- table(df_hratt$business_travel, df_hratt$attrition)
 # Perform the Chi-square test
 chi_square_test <- chisq.test(contingency_table)
 
+print(chi_square_test)
+```
+```{r, echo=FALSE}
 # Interpret the results
 if (chi_square_test$p.value < 0.05) {
   conclusion <- "There is a significant association between business travel and attrition."
@@ -1479,12 +1528,11 @@ if (chi_square_test$p.value < 0.05) {
 # Print the conclusion
 print(conclusion)
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Plotting the rate of attrition per business travel frequency
 ggplot(df_hratt, aes(x = business_travel, fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(title = "Attrition Probabilities per business travel frequency",
        x = "Business travel frequency",
        fill = "Attrition") +
@@ -1508,6 +1556,9 @@ contingency_table <- table(df_hratt$department, df_hratt$attrition)
 # Perform the Chi-square test
 chi_square_test <- chisq.test(contingency_table)
 
+print(chi_square_test)
+```
+```{r, echo=FALSE}
 # Interpretation of results
 if(chi_square_test$p.value < 0.05) {
   print("There is a significant association in attrition rates across departments.")
@@ -1515,12 +1566,11 @@ if(chi_square_test$p.value < 0.05) {
   print("There is no significant association in attrition rates across departments.")
 }
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Plotting the rate of attrition per department
 ggplot(df_hratt, aes(x = department, fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(title = "Attrition Probabilities per department",
        x = "Department",
        fill = "Attrition") +
@@ -1543,12 +1593,12 @@ This analysis examines which departments have higher turnover, testing the hypot
 # Create a contingency table for education field and attrition
 contingency_table_education <- table(df_hratt$education_field, df_hratt$attrition)
 
-# Print the contingency table to check the count of observations in each cell
-print(contingency_table_education)
-
 # Perform the Chi-square test
 chi_square_test_education <- chisq.test(contingency_table_education)
 
+print(chi_square_test_education)
+```
+```{r, echo=FALSE}
 # Interpretation of results
 if (chi_square_test_education$p.value < 0.05) {
   print("There is a significant association between education field and attrition.")
@@ -1556,12 +1606,11 @@ if (chi_square_test_education$p.value < 0.05) {
   print("There is no significant association between education field and attrition.")
 }
 ```
-
 ```{r, echo=FALSE, fig.width= 12, fig.height= 6}
 # Plotting the rate of attrition per education field
 ggplot(df_hratt, aes(x = education_field, fill = attrition)) +
   geom_bar(position = "fill") +
-  scale_fill_manual(values = c("lightcoral", "steelblue")) +
+  scale_fill_manual(values = c("lightgray", "blue")) +
   labs(title = "Attrition Probabilities per education field",
        x = "Education Field",
        fill = "Attrition") +
@@ -1630,7 +1679,7 @@ ggcorrplot(correlation,
            method = "square", 
            lab = TRUE,               # Display correlation coefficients in cells
            lab_size = 3,             # Slightly larger font size for better readability
-           colors = c("#4575b4", "white", "#d73027"),  # High-contrast color palette
+           colors = c("blue", "white", "orange"),  # High-contrast color palette
            title = "Correlation Heatmap of Numerical Variables",
            ggtheme = theme_minimal(base_size = 12),    # Increase base font size for larger plot
            legend.title = "Correlation") +
@@ -1737,7 +1786,7 @@ correlation_long <- correlation_result %>%
 # Plotting the heatmap
 ggplot(correlation_long, aes(Var1, Var2, fill = value)) +
   geom_tile() +
-  scale_fill_gradient(low = "white", high = "#A6D4D1") +  # Soft blue-green gradient
+  scale_fill_gradient(low = "white", high ="blue") +  # Soft blue-green gradient
   geom_text(aes(label = round(value, 2)), color = "black", size = 6) +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +

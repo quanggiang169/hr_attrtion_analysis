@@ -333,6 +333,12 @@ Note: Because the data set is fictional, it is free of any NaN values.
 
 #### 3.7.1. Separate Numerical and Categorical Variables
 
+``` r
+# Separate numerical and categorical attributes
+num_attributes <- df_hratt_cln %>% select(where(is.numeric))
+cat_attributes <- df_hratt_cln %>% select(where(negate(is.numeric)))
+```
+
 #### 3.7.2. Create a Summary Data Frame
 
 | attributes | min | max | range | mean | median | std | skewness | kurtosis |
@@ -466,6 +472,11 @@ write.csv(df_hratt_cln, file = 'dataset/Human_Resources_clean.csv', row.names = 
 
 ### 5.1. Loading data set
 
+``` r
+# Loads data set
+df_hratt <- read_csv("dataset/Human_Resources_clean.csv")
+```
+
     ## Rows: 1470 Columns: 35
     ## ── Column specification ────────────────────────────────────────────────────────
     ## Delimiter: ","
@@ -508,9 +519,9 @@ me analyze employee behavior and make better predictions about their
 actions.
 
     ## # A tibble: 1 × 31
-    ##     age attrition business_travel   daily_rate department     distance_from_home
-    ##   <dbl> <chr>     <chr>                  <dbl> <chr>                       <dbl>
-    ## 1    27 No        Travel_Frequently       1297 Research & De…                  5
+    ##     age attrition business_travel daily_rate department       distance_from_home
+    ##   <dbl> <chr>     <chr>                <dbl> <chr>                         <dbl>
+    ## 1    32 No        Non-Travel            1184 Research & Deve…                  1
     ## # ℹ 25 more variables: education <dbl>, education_field <chr>,
     ## #   environment_satisfaction <dbl>, gender <chr>, hourly_rate <dbl>,
     ## #   job_involvement <dbl>, job_level <dbl>, job_role <chr>,
@@ -531,13 +542,97 @@ labels. By replacing the numerical codes with clear names, my data will
 become easier to read and understand, ultimately improving the quality
 of my analysis.
 
+``` r
+# Convert education levels
+df_hratt <- df_hratt %>%
+  mutate(education = recode(education, 
+                            `1` = "Below College", 
+                            `2` = "College", 
+                            `3` = "Bachelor", 
+                            `4` = "Master", 
+                            `5` = "Doctor"))
+
+# Convert environment satisfaction levels
+df_hratt <- df_hratt %>%
+  mutate(environment_satisfaction = recode(environment_satisfaction, 
+                                           `1` = "Low", 
+                                           `2` = "Medium", 
+                                           `3` = "High", 
+                                           `4` = "Very High"))
+
+# Convert job involvement levels
+df_hratt <- df_hratt %>%
+  mutate(job_involvement = recode(job_involvement, 
+                                  `1` = "Low", 
+                                  `2` = "Medium", 
+                                  `3` = "High", 
+                                  `4` = "Very High"))
+
+# Convert job levels
+df_hratt <- df_hratt %>%
+  mutate(job_level = recode(job_level, 
+                            `1` = "Junior", 
+                            `2` = "Mid", 
+                            `3` = "Senior", 
+                            `4` = "Manager", 
+                            `5` = "Director"))
+
+# Convert job satisfaction levels
+df_hratt <- df_hratt %>%
+  mutate(job_satisfaction = recode(job_satisfaction, 
+                                   `1` = "Low", 
+                                   `2` = "Medium", 
+                                   `3` = "High", 
+                                   `4` = "Very High"))
+
+# Convert performance rating levels
+df_hratt <- df_hratt %>%
+  mutate(performance_rating = recode(performance_rating, 
+                                     `1` = "Low", 
+                                     `2` = "Good", 
+                                     `3` = "Excellent", 
+                                     `4` = "Outstanding"))
+
+# Convert relationship satisfaction levels
+df_hratt <- df_hratt %>%
+  mutate(relationship_satisfaction = recode(relationship_satisfaction, 
+                                            `1` = "Low", 
+                                            `2` = "Medium", 
+                                            `3` = "High", 
+                                            `4` = "Very High"))
+
+# Convert work life balance levels
+df_hratt <- df_hratt %>%
+  mutate(work_life_balance = recode(work_life_balance, 
+                                    `1` = "Bad", 
+                                    `2` = "Good", 
+                                    `3` = "Better", 
+                                    `4` = "Best"))
+```
+
 ### 5.4. Checkpoint
+
+``` r
+# Save the current data set state
+write.csv(df_hratt, file = "dataset/Human_Resources_fe.csv", row.names = FALSE)
+```
 
 ## 6. Exploratory data analysis
 
 ### 6.1. Loading data set
 
+``` r
+df_hratt <- read.csv("dataset/Human_Resources_fe.csv")
+```
+
 ### 6.2. Separating data types
+
+``` r
+#selects only numerical attributes
+num_attributes <- df_hratt %>% select(where(is.numeric))
+#selects only categorical attributes
+cat_attributes <- df_hratt %>% select(where(negate(is.numeric)))
+```
 
 ### 6.3. Univariate Analysis
 
@@ -597,9 +692,20 @@ categorical factors are distributed in the dataset.
 
 #### H1. People up to 40s tend to leave. **<span style="color: green;">TRUE</span>**
 
+    ## 
+    ## Call:  glm(formula = attrition ~ age, family = binomial, data = df_hratt)
+    ## 
+    ## Coefficients:
+    ## (Intercept)          age  
+    ##     0.20620     -0.05225  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1259  AIC: 1263
+
     ## [1] "There is a significant association between attrition and age."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
 This analysis looks at how age affects whether people leave or stay
 (attrition). The two variables used are *attrition* (Yes or No) and
@@ -616,9 +722,15 @@ association between age and attrition.
 
 #### H2. People that have higher degree of education tend to leave more. **<span style="color: red;">FALSE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  table_e
+    ## X-squared = 3.074, df = 4, p-value = 0.5455
+
     ## [1] "There is no significant association between attrition and education."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 This analysis explores the association between education level and
 attrition. The two variables examined are *attrition* (Yes or No) and
@@ -635,9 +747,21 @@ attrition rate is approximately 0.125 across all education levels.
 
 #### H3. People who live far from work tend to leave. (Need for further analysis)
 
+    ## 
+    ## Call:  glm(formula = attrition ~ distance_from_home, family = binomial, 
+    ##     data = df_hratt)
+    ## 
+    ## Coefficients:
+    ##        (Intercept)  distance_from_home  
+    ##           -1.89005             0.02471  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1290  AIC: 1294
+
     ## [1] "There is a significant association between attrition and distance from home."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
 
 The bar chart displays the distribution of attrition (Yes/No) across
 different distances from home. From the chart, it can be observed that
@@ -655,9 +779,15 @@ further analysis to better understand this relationship.
 
 #### H4. Single people tend to leave more. **<span style="color: green;">TRUE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  table_ms
+    ## X-squared = 46.164, df = 2, p-value = 9.456e-11
+
     ## [1] "There is a significant association between attrition and marital status."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
 
 This analysis explores the association between marital status and
 attrition. The two variables examined are attrition (Yes or No) and
@@ -674,9 +804,15 @@ is higher compared to those who are married or divorced.
 
 #### H5. People who make overtime tend to leave more. **<span style="color: green;">TRUE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test with Yates' continuity correction
+    ## 
+    ## data:  table_ot
+    ## X-squared = 87.564, df = 1, p-value < 2.2e-16
+
     ## [1] "There is a significant association between attrition and overtime."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
 
 This analysis explores the association between overtime and attrition.
 The two variables examined are overtime (Yes or No) and attrition (Yes
@@ -694,9 +830,15 @@ not.
 
 #### H7. People who present lower performance ratings tend to leave more. **<span style="color: red;">FALSE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test with Yates' continuity correction
+    ## 
+    ## data:  table_pr
+    ## X-squared = 0.00015475, df = 1, p-value = 0.9901
+
     ## [1] "There is no significant association between attrition and performance ratings."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
 
 This analysis examines the association between performance ratings and
 attrition, specifically testing whether employees with either higher or
@@ -717,9 +859,15 @@ similar rates of attrition.
 
 #### H8. People who have lower job level tend to leave more. **<span style="color: green;">TRUE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  table_jl
+    ## X-squared = 72.529, df = 4, p-value = 6.635e-15
+
     ## [1] "There is a significant association between attrition and job level."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
 
 This analysis examines the association between job level and attrition,
 specifically testing whether employees at lower job levels tend to have
@@ -743,9 +891,21 @@ higher rates of attrition compared to those at higher levels.
 
 #### H9. People who weren’t promoted for long time tend to leave more. **<span style="color: red;">FALSE</span>**
 
+    ## 
+    ## Call:  glm(formula = attrition ~ years_since_last_promotion, family = binomial, 
+    ##     data = df_hratt)
+    ## 
+    ## Coefficients:
+    ##                (Intercept)  years_since_last_promotion  
+    ##                   -1.58703                    -0.02979  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1297  AIC: 1301
+
     ## [1] "There is no significant association between attrition and years since last promotion."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-36-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
 
 This analysis examines the association between the length of time since
 an employee’s last promotion and their likelihood of attrition, testing
@@ -764,9 +924,21 @@ last promotion to attrition rates.
 
 #### H10. People who are in the current role for long time tend to leave more. (Need for further analysis)
 
+    ## 
+    ## Call:  glm(formula = attrition ~ years_in_current_role, family = binomial, 
+    ##     data = df_hratt)
+    ## 
+    ## Coefficients:
+    ##           (Intercept)  years_in_current_role  
+    ##               -1.1184                -0.1463  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1256  AIC: 1260
+
     ## [1] "There is a significant association between attrition and years in current role."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
 
 This analysis examines whether employees who have remained in their
 current role for a longer duration are more likely to leave, testing the
@@ -789,9 +961,15 @@ observed across all visualized data points.
 
 #### H11. People who feel less involved with the job tend to leave more. **<span style="color: green;">TRUE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  table_ji
+    ## X-squared = 28.492, df = 3, p-value = 2.863e-06
+
     ## [1] "There is a significant association between attrition and job involvement."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
 
 This analysis explores the association between job involvement and
 attrition, testing the hypothesis that people with lower job involvement
@@ -809,9 +987,15 @@ lower job involvement may be associated with higher attrition rates.
 
 #### H12. People who feel less satisfied with the job tend to leave more. **<span style="color: green;">TRUE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  table_js
+    ## X-squared = 17.505, df = 3, p-value = 0.0005563
+
     ## [1] "There is a significant association between attrition and job satisfaction."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
 
 This analysis examines the association between job satisfaction and
 attrition, testing the hypothesis that people who are less satisfied
@@ -829,9 +1013,15 @@ job satisfaction may be associated with higher attrition rates.
 
 #### H13. People who feel less satisfied with the environment tend to leave more. **<span style="color: green;">TRUE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  table_es
+    ## X-squared = 22.504, df = 3, p-value = 5.123e-05
+
     ## [1] "There is a significant association between attrition and environment satisfaction."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-44-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
 
 This analysis examines the association between environment satisfaction
 and attrition, testing the hypothesis that lower environment
@@ -849,9 +1039,15 @@ satisfaction is linked to higher attrition.
 
 #### H14. People who have lower work life balance tend to leave more. **<span style="color: green;">TRUE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  table_wl
+    ## X-squared = 16.325, df = 3, p-value = 0.0009726
+
     ## [1] "There is a significant association between attrition and work-life balance (Chi-square test)."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-46-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-59-1.png)<!-- -->
 
 This analysis examines the association between work-life balance and
 attrition, testing the hypothesis that people with lower work-life
@@ -869,9 +1065,21 @@ higher attrition.
 
 #### H15. People who professionally worked for more years tend to not leave. **<span style="color: green;">TRUE</span>**
 
+    ## 
+    ## Call:  glm(formula = attrition ~ total_working_years, family = binomial, 
+    ##     data = df_hratt)
+    ## 
+    ## Coefficients:
+    ##         (Intercept)  total_working_years  
+    ##            -0.88306             -0.07773  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1248  AIC: 1252
+
     ## [1] "There is a significant association between attrition and total working years."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
 
 This analysis examines the association between total working years and
 attrition, testing the hypothesis that people with more professional
@@ -887,9 +1095,21 @@ the overall trend still supports the hypothesis.
 
 #### H16. People who worked at the same company for more years tend not to leave. **<span style="color: green;">TRUE</span>**
 
+    ## 
+    ## Call:  glm(formula = attrition ~ years_at_company, family = binomial, 
+    ##     data = df_hratt)
+    ## 
+    ## Coefficients:
+    ##      (Intercept)  years_at_company  
+    ##         -1.15577          -0.08076  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1266  AIC: 1270
+
     ## [1] "There is a significant association between attrition and years at company."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-65-1.png)<!-- -->
 
 This analysis examines the association between years at the company and
 attrition, testing the hypothesis that employees with more years at the
@@ -910,9 +1130,21 @@ factors may influence attrition at these points.
 
 #### H17. People who are job hoppers tend to leave more. **<span style="color: red;">FALSE</span>**
 
+    ## 
+    ## Call:  glm(formula = attrition ~ num_companies_worked, family = binomial, 
+    ##     data = df_hratt)
+    ## 
+    ## Coefficients:
+    ##          (Intercept)  num_companies_worked  
+    ##             -1.77652               0.04565  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1296  AIC: 1300
+
     ## [1] "There is no significant association between attrition and the number of companies worked."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-52-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-68-1.png)<!-- -->
 
 This analysis examines the association between the number of companies
 worked at and attrition, testing the hypothesis that job hoppers are
@@ -928,13 +1160,46 @@ significantly affect their likelihood of leaving.
 
 #### H18. People who are making more money tend not to leave. (Need for further analysis)
 
+    ## 
+    ## Call:  glm(formula = attrition ~ hourly_rate, family = binomial, data = df_hratt)
+    ## 
+    ## Coefficients:
+    ## (Intercept)  hourly_rate  
+    ##  -1.5889155   -0.0009159  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1299  AIC: 1303
+
+    ## 
+    ## Call:  glm(formula = attrition ~ daily_rate, family = binomial, data = df_hratt)
+    ## 
+    ## Coefficients:
+    ## (Intercept)   daily_rate  
+    ##  -1.3495400   -0.0003834  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1294  AIC: 1298
+
+    ## 
+    ## Call:  glm(formula = attrition ~ monthly_rate, family = binomial, data = df_hratt)
+    ## 
+    ## Coefficients:
+    ##  (Intercept)  monthly_rate  
+    ##   -1.733e+00     5.798e-06  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1298  AIC: 1302
+
     ## [1] "Hourly rate is not significantly associated with attrition."
 
     ## [1] "Daily rate is significantly associated with attrition. (Odds Ratio:  1 )"
 
     ## [1] "Monthly rate is not significantly associated with attrition."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-54-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
 
 This analysis examines the association between compensation and
 attrition, testing the hypothesis that people earning more money are
@@ -954,9 +1219,21 @@ in this analysis.
 
 #### H19. People who have shorter salary hike range tend to leave. **<span style="color: red;">FALSE</span>**
 
+    ## 
+    ## Call:  glm(formula = attrition ~ percent_salary_hike, family = binomial, 
+    ##     data = df_hratt)
+    ## 
+    ## Coefficients:
+    ##         (Intercept)  percent_salary_hike  
+    ##            -1.49563             -0.01012  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1298  AIC: 1302
+
     ## [1] "There is no significant association between attrition and percent_salary_hike."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-56-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-73-1.png)<!-- -->
 
 This analysis examines the association between salary hike range and
 attrition, testing the hypothesis that people with shorter salary hike
@@ -970,9 +1247,21 @@ fairly consistent across different ranges of salary hikes.
 
 #### H20. People who received less training last year tend to leave more. (Need further analysis)
 
+    ## 
+    ## Call:  glm(formula = attrition ~ training_times_last_year, family = binomial, 
+    ##     data = df_hratt)
+    ## 
+    ## Coefficients:
+    ##              (Intercept)  training_times_last_year  
+    ##                  -1.2948                   -0.1299  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1468 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1293  AIC: 1297
+
     ## [1] "There is a significant association between attrition and training times last year."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-58-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-76-1.png)<!-- -->
 
 This analysis examines the association between training received last
 year and attrition, testing the hypothesis that people who received less
@@ -989,9 +1278,23 @@ help clarify the relationship between these variables.
 
 #### H21. People who have been working for the same manager for short years tend to leave more. **<span style="color: red;">FALSE</span>**
 
+    ## 
+    ## Call:  glm(formula = attrition ~ relationship_satisfaction, family = binomial, 
+    ##     data = df_hratt)
+    ## 
+    ## Coefficients:
+    ##                        (Intercept)        relationship_satisfactionLow  
+    ##                           -1.69833                             0.35231  
+    ##    relationship_satisfactionMedium  relationship_satisfactionVery High  
+    ##                           -0.04797                            -0.05087  
+    ## 
+    ## Degrees of Freedom: 1469 Total (i.e. Null);  1466 Residual
+    ## Null Deviance:       1299 
+    ## Residual Deviance: 1294  AIC: 1302
+
     ## [1] "There is no significant association between relationship satisfaction and attrition."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-60-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-79-1.png)<!-- -->
 
 This analysis examines the association between years with the current
 manager and attrition, testing the hypothesis that people who have been
@@ -1008,9 +1311,15 @@ years.
 
 #### H22. People who have lower quality of relationship with the manager tend to leave more. **<span style="color: red;">FALSE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  contingency_table
+    ## X-squared = 5.2411, df = 3, p-value = 0.155
+
     ## [1] "There is no significant association between relationship satisfaction and attrition."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-62-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-82-1.png)<!-- -->
 
 This analysis examines the association between relationship satisfaction
 with the manager and attrition, testing the hypothesis that people with
@@ -1026,9 +1335,15 @@ Very High having similar, lower rates of attrition.
 
 #### H23. People who travel more frequently tend to leave more. **<span style="color: red;">FALSE</span>**
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  contingency_table
+    ## X-squared = 24.182, df = 2, p-value = 5.609e-06
+
     ## [1] "There is a significant association between business travel and attrition."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-64-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-85-1.png)<!-- -->
 
 This analysis examines the association between business travel frequency
 and attrition, testing the hypothesis that people who travel more
@@ -1043,9 +1358,15 @@ Rarely,” and the lowest attrition rate is in the “Non-Travel” category.
 
 #### H24. Which departments has more turnover?
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  contingency_table
+    ## X-squared = 10.796, df = 2, p-value = 0.004526
+
     ## [1] "There is a significant association in attrition rates across departments."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-66-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-88-1.png)<!-- -->
 
 This analysis examines which departments have higher turnover, testing
 the hypothesis that some departments experience more attrition than
@@ -1062,21 +1383,18 @@ lowest attrition rate.
 
 #### H25. Which education field has more turnover? (Need for further analysis)
 
-    ##                   
-    ##                     No Yes
-    ##   Human Resources   20   7
-    ##   Life Sciences    517  89
-    ##   Marketing        124  35
-    ##   Medical          401  63
-    ##   Other             71  11
-    ##   Technical Degree 100  32
-
     ## Warning in stats::chisq.test(x, y, ...): Chi-squared approximation may be
     ## incorrect
 
+    ## 
+    ##  Pearson's Chi-squared test
+    ## 
+    ## data:  contingency_table_education
+    ## X-squared = 16.025, df = 5, p-value = 0.006774
+
     ## [1] "There is a significant association between education field and attrition."
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-68-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-91-1.png)<!-- -->
 
 This analysis examines which education field has higher turnover,
 testing the hypothesis that certain education fields experience more
@@ -1129,7 +1447,7 @@ Summary of Hypotheses Testing Results
 
 #### 6.5.1. Correlation between numerical attributes
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-70-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-93-1.png)<!-- -->
 
 **Analysis of the Data:**
 
@@ -1203,7 +1521,7 @@ hours:
     ## department      0.93939265 1.00000000     0.007979847
     ## business_travel 0.06385489 0.00828664     0.044060835
 
-![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-71-1.png)<!-- -->
+![](employee_attrition_analysis_files/figure-gfm/unnamed-chunk-94-1.png)<!-- -->
 
 The correlation analysis between job_role, department, and
 business_travel shows:
